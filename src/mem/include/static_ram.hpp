@@ -30,7 +30,7 @@ namespace jagce {
 		char const * readBytes(size_t index, size_t num) const override {
 			#ifdef MEM_ACCESS_ASSERTIONS
 			assert(index >= 0 && index < N);
-			assert(index + num >= 0 && index + num < N);
+			assert(index + num - 1 >= 0 && index + num - 1 < N);
 			#endif
 			
 			return arr + index;
@@ -39,7 +39,7 @@ namespace jagce {
 		void writeBytes(size_t index, char* bytes, size_t num) override {
 			#ifdef MEM_ACCESS_ASSERTIONS
 			assert(index >= 0 && index < N);
-			assert(index + num >= 0 && index < N);
+			assert(index + num - 1 >= 0 && index + num - 1 < N);
 			#endif
 
 			memmove(arr + index, bytes, num);
