@@ -36,7 +36,7 @@ namespace jagce {
 			return arr + index;
 		}
 
-		void writeBytes(size_t index, char* bytes, size_t num) override {
+		void writeBytes(size_t index, char const * bytes, size_t num) override {
 			#ifdef MEM_ACCESS_ASSERTIONS
 			assert(index >= 0 && index < N);
 			assert(index + num - 1 >= 0 && index + num - 1 < N);

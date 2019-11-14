@@ -20,7 +20,7 @@ namespace jagce {
 		void writeBytesAsType(size_t index, const T& var);
 
 		virtual char const * readBytes(size_t index, size_t num) const = 0;
-		virtual void writeBytes(size_t index, char* bytes, size_t num) = 0;
+		virtual void writeBytes(size_t index, char const * bytes, size_t num) = 0;
 	};
 
 	template <typename T>
