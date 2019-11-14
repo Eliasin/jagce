@@ -13,7 +13,7 @@ target_include_directories(mem
 )
 
 target_compile_options(mem PRIVATE -Wall)
-target_compile_features(mem PRIVATE cxx_std_17)
+target_compile_features(mem PUBLIC cxx_std_17)
 
 include(GNUInstallDirs)
 install(TARGETS mem
@@ -22,3 +22,4 @@ install(TARGETS mem
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+add_subdirectory(tests)
