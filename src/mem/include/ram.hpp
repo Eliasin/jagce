@@ -35,8 +35,8 @@ namespace jagce {
 	void RandomAccessMemory::writeBytesAsType(size_t index, const T& var) {
 		constexpr size_t T_SIZE = sizeof(T);
 		static_assert(std::is_trivially_copyable_v<T>, "Type must be trivially copyable");
-			
-		writeBytes(index, reinterpret_cast<char*>(&var), T_SIZE);
+
+		writeBytes(index, reinterpret_cast<char const *>(&var), T_SIZE);
 	}
 
 }
