@@ -1,7 +1,7 @@
 project(memlib VERSION 0.1 LANGUAGES CXX)
 
 add_library(mem
-	src/ram.cpp)
+	src/static_ram.cpp)
 
 target_include_directories(mem
 	PUBLIC
