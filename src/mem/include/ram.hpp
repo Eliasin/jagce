@@ -9,18 +9,18 @@ namespace jagce {
 	class RandomAccessMemory {
 	public:
 		virtual size_t size() const = 0;	
-		virtual char readByte(size_t index) const = 0;
+		virtual uint8_t readByte(size_t index) const = 0;
 		
 		template <typename T>
 		T const * readBytesAsType(size_t index) const;
 
-		virtual void writeByte(size_t index, char byte) = 0;
+		virtual void writeByte(size_t index, uint8_t byte) = 0;
 		
 		template <typename T>
 		void writeBytesAsType(size_t index, const T& var);
 
-		virtual char const * readBytes(size_t index, size_t num) const = 0;
-		virtual void writeBytes(size_t index, char const * bytes, size_t num) = 0;
+		virtual uint8_t const * readBytes(size_t index, size_t num) const = 0;
+		virtual void writeBytes(size_t index, uint8_t const * bytes, size_t num) = 0;
 	};
 
 	template <typename T>
@@ -36,7 +36,7 @@ namespace jagce {
 		constexpr size_t T_SIZE = sizeof(T);
 		static_assert(std::is_trivially_copyable_v<T>, "Type must be trivially copyable");
 
-		writeBytes(index, reinterpret_cast<char const *>(&var), T_SIZE);
+		writeBytes(index, reinterpret_cast<uint8_t const *>(&var), T_SIZE);
 	}
 
 }
