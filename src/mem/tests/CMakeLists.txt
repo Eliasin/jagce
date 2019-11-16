@@ -3,6 +3,7 @@ add_executable(memtest
 	static_ram_test.cpp
 )
 
-target_link_libraries(memtest mem)
+find_package(Catch2 REQUIRED)
+target_link_libraries(memtest mem Catch2::Catch2)
 
 add_test(memtest memtest)
