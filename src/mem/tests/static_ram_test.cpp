@@ -10,7 +10,7 @@ struct vec3 {
 
 TEST_CASE("static ram methods work", "[static_ram]") {
 	constexpr size_t SIZE = 100;
-	jagce::StaticRAM<SIZE> sram;
+	jagce::StaticRAM<SIZE> sram{};
 
 	SECTION("static ram size is correct") {
 		REQUIRE(sram.size() == SIZE);
