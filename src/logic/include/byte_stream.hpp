@@ -10,6 +10,7 @@ namespace jagce {
 	public:
 		uint8_t get();
 		uint8_t peek() const;
+		size_t size() const;
 		void add(uint8_t byte);
 		bool empty() const;
 

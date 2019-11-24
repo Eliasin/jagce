@@ -12,6 +12,10 @@ namespace jagce {
 		return queue.front();
 	}
 
+	size_t ByteStream::size() const {
+		return queue.size();
+	}
+
 	void ByteStream::add(uint8_t byte) {
 		return queue.push(byte);
 	}
