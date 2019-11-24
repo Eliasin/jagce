@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include <array>
+#include <map>
 
 #include "decoder.hpp"
 
@@ -8,17 +8,17 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 	jagce::Decoder decoder{};
 
 	SECTION("load instructions") {
+		auto opcode = GENERATE(0x7F, 0x78);
+		
+		std::map<uint8_t, jagce::LoadEvent> expectedEvents{
+			{ 0x7F, { {jagce::RegisterName::A}, {jagce::RegisterName::A} }},
+			{ 0x78, { {jagce::RegisterName::A}, {jagce::RegisterName::B} }}
+		};
+		
 		jagce::ByteStream bytes{};
+		bytes.add(opcode);
 
-		constexpr uint8_t LOAD_A_A = 0x7F;
-		bytes.add(LOAD_A_A);
-
-		jagce::Event event{};
-		event = decoder.decodeEvent(bytes);
-		REQUIRE(std::holds_alternative<jagce::LoadEvent>(event));
-
-		jagce::LoadEvent loadAA = std::get<jagce::LoadEvent>(event);
-		constexpr jagce::LoadEvent EXPECTED_LOAD_A_A{{jagce::RegisterName::A}, {jagce::RegisterName::A}};
-		REQUIRE(loadAA == EXPECTED_LOAD_A_A);
+		jagce::Event event = decoder.decodeEvent(bytes);
+		REQUIRE(std::get<jagce::LoadEvent>(event) == expectedEvents[opcode]);
 	}
 }
