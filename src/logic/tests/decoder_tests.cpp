@@ -18,6 +18,6 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 		jagce::ByteStream bytes{};
 		bytes.add(opcode);
 
-		REQUIRE(decoder.decodeEvent(bytes) == expectedEvents[opcode]);
+		CHECK(decoder.decodeEvent(bytes) == expectedEvents[opcode]);
 	}
 }
