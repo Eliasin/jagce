@@ -3,6 +3,10 @@
 namespace jagce {
 
 	uint8_t ByteStream::get() {
+		if (queue.empty()) {
+			throw std::out_of_range("Attempted byte stream read when no bytes were available");
+		}
+
 		uint8_t byte = queue.front();
 		queue.pop();
 		return byte;
