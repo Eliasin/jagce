@@ -12,5 +12,11 @@ namespace jagce {
 		PC
 	};
 
+	enum class Indirect {
+		HL,
+		BC,
+		DE
+	};
+
 }
 #endif
