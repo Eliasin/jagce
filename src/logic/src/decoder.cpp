@@ -4,6 +4,10 @@
 
 namespace jagce {
 
+	bool LoadEvent::operator==(const LoadEvent& other) const {
+		return this->dest == other.dest && this->src == other.src;
+	}
+
 	Event Decoder::decodeEvent(ByteStream& in) {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
@@ -19,8 +23,30 @@ namespace jagce {
 		switch (opcode) {
 			case 0x7F:
 				return {LoadEvent{{RegisterName::A}, {RegisterName::A}}};
+				break;
+			case 0x78:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::B}}};
+				break;
+			case 0x79:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::C}}};
+				break;
+			case 0x7A:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::D}}};
+				break;
+			case 0x7B:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::E}}};
+				break;
+			case 0x7C:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::H}}};
+				break;
+			case 0x7D:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::L}}};
+			case 0x7E:
+				return {LoadEvent{{RegisterName::A}, {RegisterName::A}}};
+				break;
 			default:
 				return {NopEvent{}};
+				break;
 		}
 	}
 

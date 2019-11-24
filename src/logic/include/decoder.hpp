@@ -17,6 +17,7 @@ namespace jagce {
 	struct LoadEvent {
 		Writeable dest;
 		Readable src;
+		bool operator==(const LoadEvent& other) const;
 	};
 
 	using NopEvent = std::monostate;
