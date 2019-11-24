@@ -1,6 +1,7 @@
 add_executable(logictest
 	main.cpp
 	byte_stream_tests.cpp
+	decoder_tests.cpp
 )
 
 set_target_properties(logictest
