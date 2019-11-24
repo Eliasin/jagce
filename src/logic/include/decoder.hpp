@@ -29,9 +29,9 @@ namespace jagce {
 	 */
 	class Decoder {
 	public:
-		Event decodeEvent(ByteStream& in);
-		std::vector<Event> decodeEvents(ByteStream& in, size_t n);
-		std::vector<Event> decodeUntilEmpty(ByteStream& in);
+		Event decodeEvent(ByteStream& in) const;
+		std::vector<Event> decodeEvents(ByteStream& in, size_t n) const;
+		std::vector<Event> decodeUntilEmpty(ByteStream& in) const;
 	};
 
 }

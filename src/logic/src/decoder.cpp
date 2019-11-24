@@ -8,7 +8,7 @@ namespace jagce {
 		return this->dest == other.dest && this->src == other.src;
 	}
 
-	Event Decoder::decodeEvent(ByteStream& in) {
+	Event Decoder::decodeEvent(ByteStream& in) const {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
 		uint8_t opcode{};
@@ -50,7 +50,7 @@ namespace jagce {
 		}
 	}
 
-	std::vector<Event> Decoder::decodeEvents(ByteStream& in, size_t n) {
+	std::vector<Event> Decoder::decodeEvents(ByteStream& in, size_t n) const {
 		std::vector<Event> events{};
 		for (size_t i = 0; i < n; i++) {
 			events.push_back(decodeEvent(in));
@@ -58,7 +58,7 @@ namespace jagce {
 		return events;
 	}
 
-	std::vector<Event> Decoder::decodeUntilEmpty(ByteStream& in) {
+	std::vector<Event> Decoder::decodeUntilEmpty(ByteStream& in) const {
 		return decodeEvents(in, in.size());
 	}
 }
