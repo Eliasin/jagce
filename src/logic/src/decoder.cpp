@@ -42,7 +42,7 @@ namespace jagce {
 			case 0x7D:
 				return {LoadEvent{{RegisterName::A}, {RegisterName::L}}};
 			case 0x7E:
-				return {LoadEvent{{RegisterName::A}, {RegisterName::A}}};
+				return {LoadEvent{{RegisterName::A}, {Indirect::HL}}};
 				break;
 			default:
 				return {NopEvent{}};
