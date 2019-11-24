@@ -8,11 +8,16 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 	jagce::Decoder decoder{};
 
 	SECTION("single instruction decodes") {
-		auto opcode = GENERATE(0x7F, 0x78);
+		auto opcode = GENERATE(0x7F, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D);
 		
 		std::map<uint8_t, jagce::Event> expectedEvents{
 			{ 0x7F, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::A} }} },
-			{ 0x78, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::B} }} }
+			{ 0x78, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::B} }} },
+			{ 0x79, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::C} }} },
+			{ 0x7A, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::D} }} },
+			{ 0x7B, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::E} }} },
+			{ 0x7C, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::H} }} },
+			{ 0x7D, {jagce::LoadEvent{ {jagce::RegisterName::A}, {jagce::RegisterName::L} }} }
 		};
 		
 		jagce::ByteStream bytes{};
