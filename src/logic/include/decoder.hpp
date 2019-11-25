@@ -10,9 +10,10 @@
 namespace jagce {
 
 	using Address = size_t;
-	using Immediate = uint16_t;
+	using Immediate8 = uint8_t;
+	using Immediate16 = uint16_t;
 	using Writeable = std::variant<RegisterName, Address, Indirect>;
-	using Readable = std::variant<RegisterName, Address, Immediate, Indirect>;
+	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect>;
 
 	struct LoadEvent8 {
 		Writeable dest;
