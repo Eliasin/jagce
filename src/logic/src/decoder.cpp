@@ -74,6 +74,7 @@ namespace jagce {
 				break;
 			case 0x7D:
 				return {LoadEvent8{{RegisterName::A}, {RegisterName::L}}};
+				break;
 			case 0x7E:
 				return {LoadEvent8{{RegisterName::A}, {Indirect::HL}}};
 				break;
@@ -229,9 +230,9 @@ namespace jagce {
 				}
 			case 0xFA:
 				{
-					unsigned char LS = in.get();
-					unsigned char MS = in.get();
-					Address address = (MS << 8) + LS;
+					uint8_t lsb = in.get();
+					uint8_t msb = in.get();
+					Address address = (msb << sizeof(uint8_t)) + lsb;
 					return {LoadEvent8{{RegisterName::A}, {address}}};
 					break;
 				}
@@ -267,9 +268,9 @@ namespace jagce {
 				break;
 			case 0xEA:
 				{
-					unsigned char LSB = in.get();
-					unsigned char MSB = in.get();
-					Address address = (MSB << 8) + LSB;
+					uint8_t lsb = in.get();
+					uint8_t msb = in.get();
+					Address address = (msb << 8) + lsb;
 					return {LoadEvent8{{address}, {RegisterName::A}}};
 					break;
 				}
@@ -299,6 +300,22 @@ namespace jagce {
 			case 0x22:
 				return {LoadEvent8{{Indirect::HLI}, {RegisterName::A}}};
 				break;
+			case 0xE0:
+				{
+					uint8_t lsb = in.get();
+					uint8_t msb = 0xFF;
+					Address address = (msb << sizeof(uint8_t)) + lsb;
+					return {LoadEvent8{{address}, {RegisterName::A}}};
+					break;
+				}
+			case 0xF0:
+				{
+					uint8_t lsb = in.get();
+					uint8_t msb = 0xFF;
+					Address address = (msb << sizeof(uint8_t)) + lsb;
+					return {LoadEvent8{{RegisterName::A}, {address}}};
+					break;
+				}
 			default:
 				return {NopEvent{}};
 				break;
