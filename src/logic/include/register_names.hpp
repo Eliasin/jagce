@@ -14,6 +14,8 @@ namespace jagce {
 
 	enum class Indirect {
 		HL,
+		HLI,
+		HLD,
 		BC,
 		DE
 	};
