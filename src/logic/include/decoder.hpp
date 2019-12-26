@@ -28,10 +28,30 @@ namespace jagce {
 		bool operator==(const LoadEvent8& other) const;
 	};
 
-	using NopEvent = std::monostate;
-	using Event = std::variant<LoadEvent8, NopEvent>;
+	enum class ShiftDirection {
+		LEFT,
+		RIGHT
+	};
 
-	/* The decoder class consumes bytes from a byte stream as it's input
+	enum class ShiftType {
+		LOGICAL,
+		ARITHMETIC,
+		ROTATE
+	};
+
+	struct RegisterShiftEvent {
+		RegisterName registerName;
+		ShiftDirection direction;
+		ShiftType type;
+		unsigned int amount;
+		bool operator==(const RegisterShiftEvent& other) const;
+	};
+
+	using NopEvent = std::monostate;
+	using Event = std::variant<RegisterShiftEvent, LoadEvent8, NopEvent>;
+
+	/** 
+	 * The decoder class consumes bytes from a byte stream as it's input
 	 * and produces 'events' from it. Events are state changes to RAM,
 	 * video memory or registers.
 	 */

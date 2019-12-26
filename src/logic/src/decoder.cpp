@@ -17,6 +17,10 @@ namespace jagce {
 		return this->dest == other.dest && this->src == other.src;
 	}
 
+	bool RegisterShiftEvent::operator==(const RegisterShiftEvent& other) const {
+		return this->registerName == other.registerName && this->direction == other.direction && this->type == other.type && this->amount == other.amount;
+	}
+
 	Event Decoder::decodeEvent(ByteStream& in) const {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
