@@ -12,8 +12,15 @@ namespace jagce {
 	using Address = size_t;
 	using Immediate8 = uint8_t;
 	using Immediate16 = uint16_t;
-	using Writeable = std::variant<RegisterName, Address, Indirect>;
-	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect>;
+
+	struct PartialAddress {
+		std::variant<Immediate8, RegisterName> msb;
+		std::variant<Immediate8, RegisterName> lsb;
+		bool operator==(const PartialAddress& other) const;
+	};
+
+	using Writeable = std::variant<RegisterName, Address, Indirect, PartialAddress>;
+	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress>;
 
 	struct LoadEvent8 {
 		Writeable dest;

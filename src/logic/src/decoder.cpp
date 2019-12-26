@@ -9,6 +9,10 @@ namespace jagce {
 		return {LoadEvent8{{r}, {Immediate8{immediate8}}}};
 	}
 
+	bool PartialAddress::operator==(const PartialAddress& other) const {
+		return this->msb == other.msb && this->lsb == other.lsb;
+	}
+
 	bool LoadEvent8::operator==(const LoadEvent8& other) const {
 		return this->dest == other.dest && this->src == other.src;
 	}
