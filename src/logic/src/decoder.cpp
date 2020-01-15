@@ -53,6 +53,10 @@ namespace jagce {
 			case 0x2E:
 				return createLoadFromImmediate8ToRegister(in, RegisterName::L);
 				break;
+			case 0x3E:
+				return createLoadFromImmediate8ToRegister(in, RegisterName::A);	
+				break;
+			break;
 			// 8-bit register/indirect to register/indirect loads
 			case 0x7F:
 				return {LoadEvent8{{RegisterName::A}, {RegisterName::A}}};
@@ -222,26 +226,6 @@ namespace jagce {
 			case 0x75:
 				return {LoadEvent8{{Indirect::HL}, {RegisterName::L}}};
 				break;
-			case 0x36:
-				{
-					Immediate8 n = in.get();
-					return {LoadEvent8{{Indirect::HL}, {n}}};
-					break;
-				}
-			case 0xFA:
-				{
-					uint8_t lsb = in.get();
-					uint8_t msb = in.get();
-					Address address = (msb << (sizeof(uint8_t) * 8)) + lsb;
-					return {LoadEvent8{{RegisterName::A}, {address}}};
-					break;
-				}
-			case 0x3E:
-				{
-					Immediate8 n = in.get();
-					return {LoadEvent8{{RegisterName::A}, {n}}};
-					break;
-				}
 			case 0x47:
 				return {LoadEvent8{{RegisterName::B}, {RegisterName::A}}};
 				break;
@@ -269,14 +253,32 @@ namespace jagce {
 			case 0x77:
 				return {LoadEvent8{{Indirect::HL}, {RegisterName::A}}};
 				break;
-			case 0xEA:
+			case 0x3A:
+				return {LoadEvent8{{RegisterName::A}, {Indirect::HLD}}};
+				break;
+			case 0x32:
+				return {LoadEvent8{{Indirect::HLD}, {RegisterName::A}}};
+				break;
+			case 0x2A:
+				return {LoadEvent8{{RegisterName::A}, {Indirect::HLI}}};
+				break;
+			case 0x22:
+				return {LoadEvent8{{Indirect::HLI}, {RegisterName::A}}};
+				break;
+			case 0x0A:
+				return {LoadEvent8{{RegisterName::A}, {Indirect::BC}}};
+				break;
+			case 0x1A:
+				return {LoadEvent8{{RegisterName::A}, {Indirect::DE}}};
+				break;
+			// 8 bit immediate/indirect to indirect/immediate loads
+			case 0x36:
 				{
-					uint8_t lsb = in.get();
-					uint8_t msb = in.get();
-					Address address = (msb << 8) + lsb;
-					return {LoadEvent8{{address}, {RegisterName::A}}};
+					Immediate8 n = in.get();
+					return {LoadEvent8{{Indirect::HL}, {n}}};
 					break;
 				}
+			// 8 bit loads with partial addresses
 			case 0xF2:
 				{
 					// load from address at 0xFF00 + (contents of C) to A
@@ -291,18 +293,23 @@ namespace jagce {
 					return {LoadEvent8{{partialAddress}, {RegisterName::A}}};
 					break;
 				}
-			case 0x3A:
-				return {LoadEvent8{{RegisterName::A}, {Indirect::HLD}}};
-				break;
-			case 0x32:
-				return {LoadEvent8{{Indirect::HLD}, {RegisterName::A}}};
-				break;
-			case 0x2A:
-				return {LoadEvent8{{RegisterName::A}, {Indirect::HLI}}};
-				break;
-			case 0x22:
-				return {LoadEvent8{{Indirect::HLI}, {RegisterName::A}}};
-				break;
+			// 8  bit address/register to register/address loads
+			case 0xFA:
+				{
+					uint8_t lsb = in.get();
+					uint8_t msb = in.get();
+					Address address = (msb << (sizeof(uint8_t) * 8)) + lsb;
+					return {LoadEvent8{{RegisterName::A}, {address}}};
+					break;
+				}
+			case 0xEA:
+				{
+					uint8_t lsb = in.get();
+					uint8_t msb = in.get();
+					Address address = (msb << 8) + lsb;
+					return {LoadEvent8{{address}, {RegisterName::A}}};
+					break;
+				}
 			case 0xE0:
 				{
 					uint8_t lsb = in.get();
@@ -319,12 +326,6 @@ namespace jagce {
 					return {LoadEvent8{{RegisterName::A}, {address}}};
 					break;
 				}
-			case 0x0A:
-				return {LoadEvent8{{RegisterName::A}, {Indirect::BC}}};
-				break;
-			case 0x1A:
-				return {LoadEvent8{{RegisterName::A}, {Indirect::DE}}};
-				break;
 			default:
 				return {NopEvent{}};
 				break;
