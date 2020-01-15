@@ -25,16 +25,20 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 	}
 
 	SECTION("address/register to register/address load instruction decodes") {
-		uint8_t opcode = GENERATE(0xFA, 0xEA);
+		uint8_t opcode = GENERATE(0xFA, 0xEA, 0xE0, 0xF0);
 
 		uint8_t addressLSB = GENERATE(0xFF, 0xAF, 0x11);
 		uint8_t addressMSB = GENERATE(0x96, 0xAF, 0x13);
 
 		jagce::Address address = (addressMSB << (sizeof(uint8_t) * 8)) + addressLSB;
 
+		jagce::Address ffLSB = 0xFF00 + addressLSB;
+
 		std::map<uint8_t, jagce::Event> expectedEvents {
 			{ 0xFA, {jagce::LoadEvent8{ {jagce::RegisterName::A}, {address} }} },
-			{ 0xEA, {jagce::LoadEvent8{ {address}, {jagce::RegisterName::A} }} }
+			{ 0xEA, {jagce::LoadEvent8{ {address}, {jagce::RegisterName::A} }} },
+			{ 0xE0, {jagce::LoadEvent8{ jagce::Address{ffLSB}, {jagce::RegisterName::A} }} },
+			{ 0xF0, {jagce::LoadEvent8{ {jagce::RegisterName::A}, jagce::Address{ffLSB} }} }
 		};
 
 		jagce::ByteStream bytes{};
