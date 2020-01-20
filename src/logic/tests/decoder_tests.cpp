@@ -7,6 +7,26 @@
 TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 	jagce::Decoder decoder{};
 
+	SECTION("16 bit immediate to register loads") {
+		uint8_t opcode = GENERATE(0x01);//0x11, 0x21, 0x31);
+
+		uint8_t immediateLSB = GENERATE(0x11, 0x76, 0x12);
+		uint8_t immediateMSB = GENERATE(0x66, 0x44, 0x21);
+		std::array<uint8_t, 2> immediate{ immediateLSB, immediateMSB };
+
+		jagce::Immediate16 immediate16 = (immediateMSB << (sizeof(uint8_t) * 8)) + immediateLSB;
+
+		std::map<uint8_t, jagce::Event> expectedEvents{
+			{ 0x01, {jagce::LoadEvent16{{jagce::RegisterName::BC}, {immediate16} }} }
+		};
+
+		jagce::ByteStream bytes{};
+		bytes.add(opcode);
+		bytes.addBytes<2>(immediate);
+
+		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
+	}
+
 	SECTION("8 bit loads with partial addresses") {
 		uint8_t opcode =  GENERATE(0xF2, 0xE2);
 

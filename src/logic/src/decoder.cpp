@@ -4,6 +4,14 @@
 
 namespace jagce {
 
+	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName r) {
+		Immediate8 lsb = in.get();
+		Immediate8 msb = in.get();
+		Immediate16 immediate16 = (msb << (sizeof(uint8_t) * 8)) + lsb;
+
+		return {LoadEvent16{{r}, {Immediate16{immediate16}}}};
+	}
+
 	Event createLoadFromImmediate8ToRegister(ByteStream& in, RegisterName r) {
 		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
 		return {LoadEvent8{{r}, {Immediate8{immediate8}}}};
@@ -17,8 +25,21 @@ namespace jagce {
 		return this->dest == other.dest && this->src == other.src;
 	}
 
+	bool LoadEvent16::operator==(const LoadEvent16& other) const {
+		return this->dest == other.dest && this->src == other.src;
+	}
+
 	bool RegisterShiftEvent::operator==(const RegisterShiftEvent& other) const {
 		return this->registerName == other.registerName && this->direction == other.direction && this->type == other.type && this->amount == other.amount;
+	}
+
+	bool FlagSetEvent::operator==(const FlagSetEvent& other) const {
+		return this->S == other.S && this->Z == other.Z && this->F5 == other.F5 && this->H == other.H &&
+			this->F3 == other.F3 && this->PV == other.PV && this->N == other.N && this->C == other.C;
+	}
+
+	bool CompoundEvent::operator==(const CompoundEvent& other) const {
+		return this->eventA == other.eventA && this->eventB == other.eventB;
 	}
 
 	Event Decoder::decodeEvent(ByteStream& in) const {
@@ -240,6 +261,18 @@ namespace jagce {
 					Address address = (msb << (sizeof(uint8_t) * 8)) + lsb;
 					return {LoadEvent8{{RegisterName::A}, {address}}};
 				}
+			// 16-bit immediate to register loads
+			case 0x01:
+				return createLoadFromImmediate16ToRegister(in, RegisterName::BC);
+			case 0x11:
+				return createLoadFromImmediate16ToRegister(in, RegisterName::DE);
+			case 0x21:
+				return createLoadFromImmediate16ToRegister(in, RegisterName::HL);
+			case 0x31:
+				return createLoadFromImmediate16ToRegister(in, RegisterName::SP);
+			// 16-bit register to register loads
+			case 0xF9:
+				return LoadEvent16{{RegisterName::SP}, {RegisterName::HL}};
 			default:
 				return {NopEvent{}};
 		}
