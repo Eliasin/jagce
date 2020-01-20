@@ -13,12 +13,14 @@ namespace jagce {
 	using Immediate8 = uint8_t;
 	using Immediate16 = uint16_t;
 
+	// TODO Ensure RegisterName refers to 8-bit register
 	struct PartialAddress {
 		std::variant<Immediate8, RegisterName> msb;
 		std::variant<Immediate8, RegisterName> lsb;
 		bool operator==(const PartialAddress& other) const;
 	};
 
+	// TODO Split into Writeable8, Writeable16 and Readable8, Readable16
 	using Writeable = std::variant<RegisterName, Address, Indirect, PartialAddress>;
 	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress>;
 
@@ -26,6 +28,12 @@ namespace jagce {
 		Writeable dest;
 		Readable src;
 		bool operator==(const LoadEvent8& other) const;
+	};
+
+	struct LoadEvent16 {
+		Writeable dest;
+		Readable src;
+		bool operator==(const LoadEvent16& other) const;
 	};
 
 	enum class ShiftDirection {
@@ -47,8 +55,21 @@ namespace jagce {
 		bool operator==(const RegisterShiftEvent& other) const;
 	};
 
+	struct FlagSetEvent {
+		FlagState S, Z, F5, H, F3, PV, N, C;
+		bool operator==(const FlagSetEvent& other) const;
+	};
+
 	using NopEvent = std::monostate;
-	using Event = std::variant<RegisterShiftEvent, LoadEvent8, NopEvent>;
+
+	struct CompoundEvent;
+	using Event = std::variant<FlagSetEvent, CompoundEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
+
+	struct CompoundEvent {
+		Event& eventA;
+		Event& eventB;
+		bool operator==(const CompoundEvent& other) const;
+	};
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input
