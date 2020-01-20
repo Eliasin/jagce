@@ -4,7 +4,7 @@
 
 namespace jagce {
 
-	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName r) {
+	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName16 r) {
 		Immediate8 lsb = in.get();
 		Immediate8 msb = in.get();
 		Immediate16 immediate16 = (msb << (sizeof(uint8_t) * 8)) + lsb;

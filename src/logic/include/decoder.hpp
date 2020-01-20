@@ -13,25 +13,25 @@ namespace jagce {
 	using Immediate8 = uint8_t;
 	using Immediate16 = uint16_t;
 
-	// TODO Ensure RegisterName refers to 8-bit register
 	struct PartialAddress {
-		std::variant<Immediate8, RegisterName> msb;
-		std::variant<Immediate8, RegisterName> lsb;
+		std::variant<Immediate8, RegisterName8> msb;
+		std::variant<Immediate8, RegisterName8> lsb;
 		bool operator==(const PartialAddress& other) const;
 	};
 
-	// TODO Split into Writeable8, Writeable16 and Readable8, Readable16
+	using Writeable16 = std::variant<RegisterName16, Address, Indirect, PartialAddress>;
 	using Writeable = std::variant<RegisterName, Address, Indirect, PartialAddress>;
+	using Readable8 = std::variant<RegisterName8, Address, Immediate8, Indirect, PartialAddress>;
 	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress>;
 
 	struct LoadEvent8 {
 		Writeable dest;
-		Readable src;
+		Readable8 src;
 		bool operator==(const LoadEvent8& other) const;
 	};
 
 	struct LoadEvent16 {
-		Writeable dest;
+		Writeable16 dest;
 		Readable src;
 		bool operator==(const LoadEvent16& other) const;
 	};
