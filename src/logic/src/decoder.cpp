@@ -277,6 +277,14 @@ namespace jagce {
 			// 16-bit register to register loads
 			case 0xF9:
 				return LoadEvent16{{RegisterNames::SP}, {RegisterNames::HL}};
+			// 16-bit RegisterPlusValue to register loads
+			case 0xF8:
+				{
+					Immediate16 val = in.get();
+					LoadEvent16 loadEvent{{RegisterNames::HL}, {RegisterPlusValue{RegisterNames::SP, val}}};
+					FlagSetEvent flagEvent{FlagState::UNCH, FlagState::RESET, FlagState::UNCH, FlagState::DEFER, FlagState::UNCH, FlagState::UNCH, FlagState::RESET, FlagState::DEFER};
+					return CompoundEvent{{loadEvent}, {flagEvent}};
+				}
 			default:
 				return {NopEvent{}};
 		}
