@@ -27,10 +27,14 @@ namespace jagce {
 		constexpr static RegisterName16 AF{7}, BC{8}, DE{9}, HL{10}, SP{11}, PC{12};
 	};
 
+	// DEFER refers to FlagState events that cannot be described at the current time. For example,
+	// the H or C flag during the decoding step, as the contents of the registers is not known at
+	// that time.
 	enum class FlagState {
 		UNCH,
 		SET,
-		RESET
+		RESET,
+		DEFER
 	};
 
 	enum class Indirect {
