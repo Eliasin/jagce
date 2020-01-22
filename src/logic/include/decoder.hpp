@@ -65,9 +65,11 @@ namespace jagce {
 	struct CompoundEvent;
 	using Event = std::variant<FlagSetEvent, CompoundEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
 
+	// The order of events in a compound event is well defined and is always eventA followed
+	// by eventB. The equality operator respects this.
 	struct CompoundEvent {
-		Event& eventA;
-		Event& eventB;
+		const Event& eventA;
+		const Event& eventB;
 		bool operator==(const CompoundEvent& other) const;
 	};
 
