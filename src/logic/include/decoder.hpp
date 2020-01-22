@@ -19,10 +19,16 @@ namespace jagce {
 		bool operator==(const PartialAddress& other) const;
 	};
 
+	struct RegisterPlusValue {
+		RegisterName reg;
+		Immediate16 val;
+		bool operator==(const RegisterPlusValue& other) const;
+	};
+
 	using Writeable16 = std::variant<RegisterName16, Address, Indirect, PartialAddress>;
 	using Writeable = std::variant<RegisterName, Address, Indirect, PartialAddress>;
 	using Readable8 = std::variant<RegisterName8, Address, Immediate8, Indirect, PartialAddress>;
-	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress>;
+	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress, RegisterPlusValue>;
 
 	struct LoadEvent8 {
 		Writeable dest;

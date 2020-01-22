@@ -21,6 +21,10 @@ namespace jagce {
 		return this->msb == other.msb && this->lsb == other.lsb;
 	}
 
+	bool RegisterPlusValue::operator==(const RegisterPlusValue& other) const {
+		return this->reg == other.reg && this->val == other.val;
+	};
+
 	bool LoadEvent8::operator==(const LoadEvent8& other) const {
 		return this->dest == other.dest && this->src == other.src;
 	}
