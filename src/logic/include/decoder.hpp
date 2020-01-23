@@ -3,6 +3,7 @@
 
 #include <variant>
 #include <vector>
+#include <array>
 
 #include "register_names.hpp"
 #include "byte_stream.hpp"
@@ -64,6 +65,18 @@ namespace jagce {
 	struct FlagSetEvent {
 		FlagState S, Z, F5, H, F3, PV, N, C;
 		bool operator==(const FlagSetEvent& other) const;
+	};
+
+	template <size_t N>
+	constexpr FlagSetEvent flagSetEventCreator(std::array<std::pair<FlagName, FlagState>, N> flagStates) {
+		std::array<FlagState, 8> finalFlagStates{};
+
+		for (const auto& state : flagStates) {
+			finalFlagStates.at(static_cast<size_t>(state.first)) = state.second;
+		}
+
+		return { finalFlagStates[0], finalFlagStates[1], finalFlagStates[2], finalFlagStates[3],
+				 finalFlagStates[4], finalFlagStates[5], finalFlagStates[6], finalFlagStates[7] };
 	};
 
 	using NopEvent = std::monostate;

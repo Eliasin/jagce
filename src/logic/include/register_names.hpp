@@ -1,6 +1,8 @@
 #ifndef JAGCE_REGISTER_NAMES
 #define JAGCE_REGISTER_NAMES
 
+#include <cstddef>
+
 namespace jagce {
 
 	struct RegisterName {
@@ -35,6 +37,10 @@ namespace jagce {
 		SET,
 		RESET,
 		DEFER
+	};
+
+	enum class FlagName : size_t {
+		S, Z, F5, H, F3, PV, N, C
 	};
 
 	enum class Indirect {
