@@ -7,6 +7,26 @@
 TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 	jagce::Decoder decoder{};
 
+	SECTION("16 bit register plus value to register loads") {
+		uint8_t opcode = GENERATE(0xF8);
+
+		uint8_t immediate = GENERATE(0x21, 0xA5, 0xF2);
+
+		std::map<uint8_t, jagce::Event> expectedEvents{
+			{ 0xF8, {jagce::CompoundEvent{{
+						jagce::LoadEvent16{{jagce::RegisterNames::HL},
+						jagce::RegisterPlusValue{jagce::RegisterNames::SP, immediate}}}, 
+						jagce::flagSetEventCreator(jagce::FlagEvents<4>{jagce::SingleFlagEvent{jagce::FlagName::Z, jagce::FlagState::RESET}, jagce::SingleFlagEvent{jagce::FlagName::N, jagce::FlagState::RESET}, jagce::SingleFlagEvent{jagce::FlagName::H, jagce::FlagState::DEFER}, jagce::SingleFlagEvent{jagce::FlagName::C, jagce::FlagState::DEFER} }) }}
+			}
+		};
+
+		jagce::ByteStream bytes{};
+		bytes.add(opcode);
+		bytes.add(immediate);
+
+		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
+	}
+
 	SECTION("16 bit immediate to register loads") {
 		uint8_t opcode = GENERATE(0x01);//0x11, 0x21, 0x31);
 
