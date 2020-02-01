@@ -2,6 +2,8 @@
 #define JAGCE_REGISTER_NAMES
 
 #include <cstddef>
+#include <utility>
+#include <array>
 
 namespace jagce {
 
@@ -42,6 +44,11 @@ namespace jagce {
 	enum class FlagName : size_t {
 		S, Z, F5, H, F3, PV, N, C
 	};
+
+	using SingleFlagEvent = std::pair<FlagName, FlagState>;
+
+	template <size_t N>
+	using FlagEvents = std::array<SingleFlagEvent, N>;
 
 	enum class Indirect {
 		HL,
