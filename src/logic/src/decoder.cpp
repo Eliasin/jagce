@@ -37,6 +37,10 @@ namespace jagce {
 		return this->src == other.src;
 	}
 
+	bool PopEvent::operator==(const PopEvent& other) const {
+		return this->dest == other.dest;
+	}
+
 	bool RegisterShiftEvent::operator==(const RegisterShiftEvent& other) const {
 		return this->registerName == other.registerName && this->direction == other.direction && this->type == other.type && this->amount == other.amount;
 	}
