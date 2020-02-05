@@ -4,21 +4,36 @@
 
 #include "decoder.hpp"
 
+namespace TestConstants {
+
+	constexpr jagce::FlagStateChange _ldhlFlags() {
+		jagce::FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
+		return f;
+	};
+
+	constexpr jagce::FlagStateChange ldhlFlags = _ldhlFlags();
+
+};
+
 TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 	jagce::Decoder decoder{};
 
 	SECTION("16 bit register plus value to register loads") {
 		uint8_t opcode = GENERATE(0xF8);
 
-		uint8_t immediate = GENERATE(0x21, 0xA5, 0xF2);
+		uint16_t immediate = GENERATE(0x21, 0xA5, 0xF2);
 
 		std::map<uint8_t, jagce::Event> expectedEvents{
-			{ 0xF8, {jagce::CompoundEvent{{
-						jagce::LoadEvent16{{jagce::RegisterNames::HL},
-						jagce::RegisterPlusValue{jagce::RegisterNames::SP, immediate}}}, 
-						jagce::flagSetEventCreator(jagce::FlagEvents<4>{jagce::SingleFlagEvent{jagce::FlagName::Z, jagce::FlagState::RESET}, jagce::SingleFlagEvent{jagce::FlagName::N, jagce::FlagState::RESET}, jagce::SingleFlagEvent{jagce::FlagName::H, jagce::FlagState::DEFER}, jagce::SingleFlagEvent{jagce::FlagName::C, jagce::FlagState::DEFER} }) }}
-			}
-		};
+			{ 0xF8, jagce::LoadEvent16{ {jagce::RegisterNames::HL}, {jagce::RegisterPlusValue{jagce::RegisterNames::SP, immediate}}, {TestConstants::ldhlFlags} }}};
 
 		jagce::ByteStream bytes{};
 		bytes.add(opcode);
