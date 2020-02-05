@@ -297,6 +297,15 @@ namespace jagce {
 
 					return LoadEvent16{ Address{address}, {RegisterNames::SP} };
 				}
+			// 16-bit register to stack pushes
+			case 0xF5:
+				return PushEvent{RegisterNames::AF};
+			case 0xC5:
+				return PushEvent{RegisterNames::BC};
+			case 0xD5:
+				return PushEvent{RegisterNames::DE};
+			case 0xE5:
+				return PushEvent{RegisterNames::HL};
 			default:
 				return {NopEvent{}};
 		}
