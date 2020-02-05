@@ -37,9 +37,26 @@ namespace jagce {
 		bool operator==(const LoadEvent8& other) const;
 	};
 
+	using FlagStateChange = std::array<FlagState, 8>;
+
+	constexpr FlagStateChange unionFlagStateChange(FlagStateChange a, FlagStateChange b) {
+		FlagStateChange result{a};
+		for (size_t i = 0; i < b.size(); i++) {
+			if (b.at(i) != FlagState::UNCH) {
+				if (result.at(i) != FlagState::UNCH) {
+					throw std::logic_error("Attempted union of incompatible FlagStateChange objects");
+				}
+				result.at(i) = b.at(i);
+			}
+		}
+
+		return result;
+	};
+
 	struct LoadEvent16 {
 		Writeable16 dest;
 		Readable src;
+		FlagStateChange flagStates;
 		bool operator==(const LoadEvent16& other) const;
 	};
 
@@ -62,35 +79,9 @@ namespace jagce {
 		bool operator==(const RegisterShiftEvent& other) const;
 	};
 
-	struct FlagSetEvent {
-		FlagState S, Z, F5, H, F3, PV, N, C;
-		bool operator==(const FlagSetEvent& other) const;
-	};
-
-	template <size_t N>
-	constexpr FlagSetEvent flagSetEventCreator(std::array<std::pair<FlagName, FlagState>, N> flagStates) {
-		std::array<FlagState, 8> finalFlagStates{};
-
-		for (const auto& state : flagStates) {
-			finalFlagStates.at(static_cast<size_t>(state.first)) = state.second;
-		}
-
-		return { finalFlagStates[0], finalFlagStates[1], finalFlagStates[2], finalFlagStates[3],
-				 finalFlagStates[4], finalFlagStates[5], finalFlagStates[6], finalFlagStates[7] };
-	};
-
 	using NopEvent = std::monostate;
 
-	struct CompoundEvent;
-	using Event = std::variant<FlagSetEvent, CompoundEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
-
-	// The order of events in a compound event is well defined and is always eventA followed
-	// by eventB. The equality operator respects this.
-	struct CompoundEvent {
-		const Event& eventA;
-		const Event& eventB;
-		bool operator==(const CompoundEvent& other) const;
-	};
+	using Event = std::variant<RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input

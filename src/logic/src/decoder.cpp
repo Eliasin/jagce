@@ -37,15 +37,6 @@ namespace jagce {
 		return this->registerName == other.registerName && this->direction == other.direction && this->type == other.type && this->amount == other.amount;
 	}
 
-	bool FlagSetEvent::operator==(const FlagSetEvent& other) const {
-		return this->S == other.S && this->Z == other.Z && this->F5 == other.F5 && this->H == other.H &&
-			this->F3 == other.F3 && this->PV == other.PV && this->N == other.N && this->C == other.C;
-	}
-
-	bool CompoundEvent::operator==(const CompoundEvent& other) const {
-		return this->eventA == other.eventA && this->eventB == other.eventB;
-	}
-
 	Event Decoder::decodeEvent(ByteStream& in) const {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
@@ -281,9 +272,16 @@ namespace jagce {
 			case 0xF8:
 				{
 					Immediate16 val = in.get();
-					LoadEvent16 loadEvent{{RegisterNames::HL}, {RegisterPlusValue{RegisterNames::SP, val}}};
-					FlagSetEvent flagEvent{FlagState::UNCH, FlagState::RESET, FlagState::UNCH, FlagState::DEFER, FlagState::UNCH, FlagState::UNCH, FlagState::RESET, FlagState::DEFER};
-					return CompoundEvent{{loadEvent}, {flagEvent}};
+					FlagStateChange flagStateChange{};
+
+					flagStateChange.at(static_cast<size_t>(FlagName::Z)) = FlagState::RESET;
+					flagStateChange.at(static_cast<size_t>(FlagName::N)) = FlagState::RESET;
+					flagStateChange.at(static_cast<size_t>(FlagName::H)) = FlagState::DEFER;
+					flagStateChange.at(static_cast<size_t>(FlagName::C)) = FlagState::DEFER;
+					
+					LoadEvent16 loadEvent{{RegisterNames::HL}, {RegisterPlusValue{RegisterNames::SP, val}}, flagStateChange};
+
+					return loadEvent;
 				}
 			default:
 				return {NopEvent{}};

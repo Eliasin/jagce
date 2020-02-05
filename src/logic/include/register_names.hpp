@@ -34,15 +34,15 @@ namespace jagce {
 	// DEFER refers to FlagState events that cannot be described at the current time. For example,
 	// the H or C flag during the decoding step, as the contents of the registers is not known at
 	// that time.
-	enum class FlagState {
-		UNCH,
-		SET,
-		RESET,
-		DEFER
+	enum class FlagState : uint8_t {
+		UNCH = 0,
+		SET = 1,
+		RESET = 2,
+		DEFER = 3
 	};
 
 	enum class FlagName : size_t {
-		S, Z, F5, H, F3, PV, N, C
+		S = 0, Z = 1, F5 = 2, H = 3, F3 = 4, PV = 5, N = 6, C = 7
 	};
 
 	using SingleFlagEvent = std::pair<FlagName, FlagState>;
