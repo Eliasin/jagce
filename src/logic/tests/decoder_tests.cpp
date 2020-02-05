@@ -33,11 +33,31 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 		uint16_t immediate = GENERATE(0x21, 0xA5, 0xF2);
 
 		std::map<uint8_t, jagce::Event> expectedEvents{
-			{ 0xF8, jagce::LoadEvent16{ {jagce::RegisterNames::HL}, {jagce::RegisterPlusValue{jagce::RegisterNames::SP, immediate}}, {TestConstants::ldhlFlags} }}};
+			{ 0xF8, {jagce::LoadEvent16{ {jagce::RegisterNames::HL}, {jagce::RegisterPlusValue{jagce::RegisterNames::SP, immediate}}, {TestConstants::ldhlFlags} }}}};
 
 		jagce::ByteStream bytes{};
 		bytes.add(opcode);
 		bytes.add(immediate);
+
+		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
+	}
+
+	SECTION(" 16 bit register to address loads") {
+		uint8_t opcode = GENERATE(0x08);
+
+		uint8_t addressLSB = GENERATE(0x97, 0xF5, 0x01);
+		uint8_t addressMSB = GENERATE(0x42, 0x15, 0x51);
+
+		uint16_t address = (addressMSB << sizeof(uint8_t) * 8) + addressLSB;
+
+		std::map<uint8_t, jagce::Event> expectedEvents{
+			{ 0x08, {jagce::LoadEvent16{ {jagce::Address{address}}, {jagce::RegisterNames::SP}, {} }}}
+		};
+
+		jagce::ByteStream bytes{};
+		bytes.add(opcode);
+		bytes.add(addressLSB);
+		bytes.add(addressMSB);
 
 		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
 	}

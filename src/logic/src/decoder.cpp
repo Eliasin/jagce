@@ -271,7 +271,7 @@ namespace jagce {
 			// 16-bit RegisterPlusValue to register loads
 			case 0xF8:
 				{
-					Immediate16 val = in.get();
+					Immediate16 val = static_cast<Immediate8>(in.get());
 					FlagStateChange flagStateChange{};
 
 					flagStateChange.at(static_cast<size_t>(FlagName::Z)) = FlagState::RESET;
@@ -279,9 +279,19 @@ namespace jagce {
 					flagStateChange.at(static_cast<size_t>(FlagName::H)) = FlagState::DEFER;
 					flagStateChange.at(static_cast<size_t>(FlagName::C)) = FlagState::DEFER;
 					
-					LoadEvent16 loadEvent{{RegisterNames::HL}, {RegisterPlusValue{RegisterNames::SP, val}}, flagStateChange};
+					LoadEvent16 loadEvent{{RegisterNames::HL},
+						{RegisterPlusValue{RegisterNames::SP, val}}, flagStateChange};
 
 					return loadEvent;
+				}
+			// 16-bit register to address loads
+			case 0x08:
+				{
+					Immediate8 immediateLSB = in.get();
+					Immediate8 immediateMSB = in.get();
+					Address address = (immediateMSB << sizeof(uint8_t) * 8) + immediateLSB;
+
+					return LoadEvent16{ Address{address}, {RegisterNames::SP} };
 				}
 			default:
 				return {NopEvent{}};
