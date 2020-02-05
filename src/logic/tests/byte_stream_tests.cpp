@@ -7,6 +7,10 @@
 TEST_CASE("byte stream tests work", "[byte_stream]") {
 	jagce::ByteStream byteStream{};
 
+	SECTION("invalid access throws") {
+		CHECK_THROWS(byteStream.get());
+	}
+
 	SECTION("single insertions, empty and size work correctly") {
 		uint8_t MAGIC_BYTE = 0x13;
 		REQUIRE(byteStream.empty());
