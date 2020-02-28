@@ -4,12 +4,18 @@
 
 namespace jagce {
 
-	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName16 r) {
-		Immediate8 lsb = in.get();
-		Immediate8 msb = in.get();
-		Immediate16 immediate16 = (msb << (sizeof(uint8_t) * 8)) + lsb;
+	Immediate16 getImmediate16FromByteStream(ByteStream& in) {
+		uint8_t lsb = in.get();
+		uint8_t msb = in.get();
+		return (msb << (sizeof(uint8_t) * 8)) + lsb;
+	};
 
-		return {LoadEvent16{{r}, {Immediate16{immediate16}}}};
+	Address getAddressFromByteStream(ByteStream& in) {
+		return static_cast<Address>(getImmediate16FromByteStream(in));
+	};
+
+	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName16 r) {
+		return {LoadEvent16{{r}, {Immediate16{getImmediate16FromByteStream(in)}}}};
 	}
 
 	Event createLoadFromImmediate8ToRegister(ByteStream& in, RegisterName r) {
@@ -238,17 +244,11 @@ namespace jagce {
 			// 8  bit address/register to register/address loads
 			case 0xFA:
 				{
-					uint8_t lsb = in.get();
-					uint8_t msb = in.get();
-					Address address = (msb << (sizeof(uint8_t) * 8)) + lsb;
-					return {LoadEvent8{{RegisterNames::A}, {address}}};
+					return {LoadEvent8{{RegisterNames::A}, {getAddressFromByteStream(in)}}};
 				}
 			case 0xEA:
 				{
-					uint8_t lsb = in.get();
-					uint8_t msb = in.get();
-					Address address = (msb << 8) + lsb;
-					return {LoadEvent8{{address}, {RegisterNames::A}}};
+					return {LoadEvent8{{getAddressFromByteStream(in)}, {RegisterNames::A}}};
 				}
 			case 0xE0:
 				{
@@ -295,11 +295,7 @@ namespace jagce {
 			// 16-bit register to address loads
 			case 0x08:
 				{
-					Immediate8 immediateLSB = in.get();
-					Immediate8 immediateMSB = in.get();
-					Address address = (immediateMSB << sizeof(uint8_t) * 8) + immediateLSB;
-
-					return LoadEvent16{ Address{address}, {RegisterNames::SP} };
+					return LoadEvent16{ Address{getAddressFromByteStream(in)}, {RegisterNames::SP} };
 				}
 			// 16-bit register to stack pushes
 			case 0xF5:
@@ -310,6 +306,15 @@ namespace jagce {
 				return PushEvent{RegisterNames::DE};
 			case 0xE5:
 				return PushEvent{RegisterNames::HL};
+			// 16-bit stack to register pops
+			case 0xF1:
+				return PopEvent{RegisterNames::AF};
+			case 0xC1:
+				return PopEvent{RegisterNames::BC};
+			case 0xD1:
+				return PopEvent{RegisterNames::DE};
+			case 0xE1:
+				return PopEvent{RegisterNames::HL};
 			default:
 				return {NopEvent{}};
 		}
