@@ -4,6 +4,21 @@
 
 namespace jagce {
 
+	constexpr FlagStateChange _add8FlagStateChanges() {
+		jagce::FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+		return f;
+	}
+
+	constexpr FlagStateChange add8FlagStateChanges = _add8FlagStateChanges();
+
 	Immediate16 getImmediate16FromByteStream(ByteStream& in) {
 		uint8_t lsb = in.get();
 		uint8_t msb = in.get();
@@ -45,6 +60,10 @@ namespace jagce {
 
 	bool PopEvent::operator==(const PopEvent& other) const {
 		return this->dest == other.dest;
+	}
+
+	bool AddEvent8::operator==(const AddEvent8 other) const {
+		return this->a == other.a && this->b == other.b;
 	}
 
 	bool RegisterShiftEvent::operator==(const RegisterShiftEvent& other) const {
@@ -315,6 +334,28 @@ namespace jagce {
 				return PopEvent{RegisterNames::DE};
 			case 0xE1:
 				return PopEvent{RegisterNames::HL};
+			// 8-bit add operations
+			case 0x87:
+				return AddEvent8{RegisterNames::A, RegisterNames::A, add8FlagStateChanges};
+			case 0x80:
+				return AddEvent8{RegisterNames::A, RegisterNames::B, add8FlagStateChanges};
+			case 0x81:
+				return AddEvent8{RegisterNames::A, RegisterNames::C, add8FlagStateChanges};
+			case 0x82:
+				return AddEvent8{RegisterNames::A, RegisterNames::D, add8FlagStateChanges};
+			case 0x83:
+				return AddEvent8{RegisterNames::A, RegisterNames::E, add8FlagStateChanges};
+			case 0x84:
+				return AddEvent8{RegisterNames::A, RegisterNames::H, add8FlagStateChanges};
+			case 0x85:
+				return AddEvent8{RegisterNames::A, RegisterNames::L, add8FlagStateChanges};
+			case 0x86:
+				return AddEvent8{RegisterNames::A, Indirect::HL, add8FlagStateChanges};
+			case 0xC6:
+				{
+					Immediate8 n = in.get();
+					return AddEvent8{RegisterNames::A, Immediate8{n}, add8FlagStateChanges};
+				}
 			default:
 				return {NopEvent{}};
 		}
