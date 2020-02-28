@@ -18,6 +18,7 @@ namespace jagce {
 	}
 
 	constexpr FlagStateChange add8FlagStateChanges = _add8FlagStateChanges();
+	constexpr FlagStateChange addCarry8FlagStateChanges = _add8FlagStateChanges();
 
 	Immediate16 getImmediate16FromByteStream(ByteStream& in) {
 		uint8_t lsb = in.get();
@@ -372,6 +373,25 @@ namespace jagce {
 					Immediate8 n = in.get();
 					return AddEvent8{RegisterNames::A, Immediate8{n}, add8FlagStateChanges};
 				}
+			// 8-bit add carry operations
+			case 0x8F:
+				return createAddCarry8EventFromRegister(RegisterNames::A);
+			case 0x88:
+				return createAddCarry8EventFromRegister(RegisterNames::B);
+			case 0x89:
+				return createAddCarry8EventFromRegister(RegisterNames::C);
+			case 0x8A:
+				return createAddCarry8EventFromRegister(RegisterNames::D);
+			case 0x8B:
+				return createAddCarry8EventFromRegister(RegisterNames::E);
+			case 0x8C:
+				return createAddCarry8EventFromRegister(RegisterNames::H);
+			case 0x8D:
+				return createAddCarry8EventFromRegister(RegisterNames::L);
+			case 0x8E:
+				return createAddCarry8EventFromRegister(RegisterNames::A);
+			case 0xCE:
+				return createAddCarry8EventFromIndirect(Indirect::HL);
 			default:
 				return {NopEvent{}};
 		}
