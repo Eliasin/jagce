@@ -29,6 +29,14 @@ namespace jagce {
 		return static_cast<Address>(getImmediate16FromByteStream(in));
 	};
 
+	constexpr Event createAddCarry8EventFromRegister(const RegisterName8& r) {
+		return {AddEvent8{RegisterNames::A, Register8PlusFlag{r, FlagName::C}, addCarry8FlagStateChanges}};
+	}
+
+	constexpr Event createAddCarry8EventFromIndirect(const Indirect& i) {
+		return {AddEvent8{RegisterNames::A, IndirectPlusFlag{i, FlagName::C}, addCarry8FlagStateChanges}};
+	}
+
 	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName16 r) {
 		return {LoadEvent16{{r}, {Immediate16{getImmediate16FromByteStream(in)}}}};
 	}
@@ -66,8 +74,12 @@ namespace jagce {
 		return this->dest == other.dest;
 	}
 
-	bool AddEvent8::operator==(const AddEvent8 other) const {
+	bool AddEvent8::operator==(const AddEvent8& other) const {
 		return this->a == other.a && this->b == other.b;
+	}
+
+	bool IndirectPlusFlag::operator==(const IndirectPlusFlag& other) const {
+		return this->i == other.i && this->flag == other.flag;
 	}
 
 	bool RegisterShiftEvent::operator==(const RegisterShiftEvent& other) const {

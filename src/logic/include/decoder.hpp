@@ -26,6 +26,12 @@ namespace jagce {
 		bool operator==(const Register8PlusFlag& other) const;
 	};
 
+	struct IndirectPlusFlag {
+		Indirect i;
+		FlagName flag;
+		bool operator==(const IndirectPlusFlag& other) const;
+	};
+
 	struct Register16PlusValue {
 		RegisterName reg;
 		Immediate16 val;
@@ -34,7 +40,7 @@ namespace jagce {
 
 	using Writeable16 = std::variant<RegisterName16, Address, Indirect, PartialAddress>;
 	using Writeable = std::variant<RegisterName, Address, Indirect, PartialAddress>;
-	using Readable8 = std::variant<RegisterName8, Address, Immediate8, Indirect, PartialAddress, Register8PlusFlag>;
+	using Readable8 = std::variant<RegisterName8, Address, Immediate8, Indirect, PartialAddress, Register8PlusFlag, IndirectPlusFlag>;
 	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress, Register16PlusValue, Register8PlusFlag>;
 
 	struct LoadEvent8 {
@@ -80,7 +86,7 @@ namespace jagce {
 		Readable8 a;
 		Readable8 b;
 		FlagStateChange flagStates;
-		bool operator==(const AddEvent8 other) const;
+		bool operator==(const AddEvent8& other) const;
 	};
 
 	enum class ShiftDirection {
