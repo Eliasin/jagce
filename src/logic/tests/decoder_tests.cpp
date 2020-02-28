@@ -78,6 +78,22 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
 	}
 
+	SECTION("16 bit pop events") {
+		uint8_t opcode = GENERATE(0xF1, 0xC1, 0xD1, 0xE1);
+
+		std::map<uint8_t, jagce::Event> expectedEvents{
+			{ 0xF1, {jagce::PopEvent{ {jagce::RegisterNames::AF} }} },
+			{ 0xC1, {jagce::PopEvent{ {jagce::RegisterNames::BC} }} },
+			{ 0xD1, {jagce::PopEvent{ {jagce::RegisterNames::DE} }} },
+			{ 0xE1, {jagce::PopEvent{ {jagce::RegisterNames::HL} }} }
+		};
+
+		jagce::ByteStream bytes{};
+		bytes.add(opcode);
+
+		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
+	}
+
 	SECTION("16 bit immediate to register loads") {
 		uint8_t opcode = GENERATE(0x01);//0x11, 0x21, 0x31);
 
