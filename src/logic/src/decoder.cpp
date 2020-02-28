@@ -42,7 +42,11 @@ namespace jagce {
 		return this->msb == other.msb && this->lsb == other.lsb;
 	}
 
-	bool RegisterPlusValue::operator==(const RegisterPlusValue& other) const {
+	bool Register8PlusFlag::operator==(const Register8PlusFlag& other) const {
+		return this->r == other.r && this->flag == other.flag;
+	}
+
+	bool Register16PlusValue::operator==(const Register16PlusValue& other) const {
 		return this->reg == other.reg && this->val == other.val;
 	};
 
@@ -295,7 +299,7 @@ namespace jagce {
 			// 16-bit register to register loads
 			case 0xF9:
 				return LoadEvent16{{RegisterNames::SP}, {RegisterNames::HL}};
-			// 16-bit RegisterPlusValue to register loads
+			// 16-bit Register16PlusValue to register loads
 			case 0xF8:
 				{
 					Immediate16 val = static_cast<Immediate8>(in.get());
@@ -307,7 +311,7 @@ namespace jagce {
 					flagStateChange.at(static_cast<size_t>(FlagName::C)) = FlagState::DEFER;
 					
 					LoadEvent16 loadEvent{{RegisterNames::HL},
-						{RegisterPlusValue{RegisterNames::SP, val}}, flagStateChange};
+						{Register16PlusValue{RegisterNames::SP, val}}, flagStateChange};
 
 					return loadEvent;
 				}

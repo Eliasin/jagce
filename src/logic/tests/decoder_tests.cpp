@@ -33,7 +33,7 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 		uint16_t immediate = GENERATE(0x21, 0xA5, 0xF2);
 
 		std::map<uint8_t, jagce::Event> expectedEvents{
-			{ 0xF8, {jagce::LoadEvent16{ {jagce::RegisterNames::HL}, {jagce::RegisterPlusValue{jagce::RegisterNames::SP, immediate}}, {TestConstants::ldhlFlags} }}}};
+			{ 0xF8, {jagce::LoadEvent16{ {jagce::RegisterNames::HL}, {jagce::Register16PlusValue{jagce::RegisterNames::SP, immediate}}, {TestConstants::ldhlFlags} }}}};
 
 		jagce::ByteStream bytes{};
 		bytes.add(opcode);
