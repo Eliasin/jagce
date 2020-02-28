@@ -42,7 +42,7 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
 	}
 
-	SECTION(" 16 bit register to address loads") {
+	SECTION("16 bit register to address loads") {
 		uint8_t opcode = GENERATE(0x08);
 
 		uint8_t addressLSB = GENERATE(0x97, 0xF5, 0x01);
@@ -58,6 +58,22 @@ TEST_CASE("decoder produces correct events", "[logic], [decoder]") {
 		bytes.add(opcode);
 		bytes.add(addressLSB);
 		bytes.add(addressMSB);
+
+		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
+	}
+
+	SECTION("16 bit push events") {
+		uint8_t opcode = GENERATE(0xF5, 0xC5, 0xD5, 0xE5);
+
+		std::map<uint8_t, jagce::Event> expectedEvents{
+			{ 0xF5, {jagce::PushEvent{ {jagce::RegisterNames::AF} }} },
+			{ 0xC5, {jagce::PushEvent{ {jagce::RegisterNames::BC} }} },
+			{ 0xD5, {jagce::PushEvent{ {jagce::RegisterNames::DE} }} },
+			{ 0xE5, {jagce::PushEvent{ {jagce::RegisterNames::HL} }} }
+		};
+
+		jagce::ByteStream bytes{};
+		bytes.add(opcode);
 
 		CHECK(decoder.decodeEvent(bytes) == expectedEvents.at(opcode));
 	}
