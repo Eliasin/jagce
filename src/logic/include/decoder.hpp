@@ -32,6 +32,12 @@ namespace jagce {
 		bool operator==(const IndirectPlusFlag& other) const;
 	};
 
+	struct Immediate8PlusFlag {
+		Immediate8 n;
+		FlagName flag;
+		bool operator==(const Immediate8PlusFlag& other) const;
+	};
+
 	struct Register16PlusValue {
 		RegisterName reg;
 		Immediate16 val;
@@ -40,8 +46,8 @@ namespace jagce {
 
 	using Writeable16 = std::variant<RegisterName16, Address, Indirect, PartialAddress>;
 	using Writeable = std::variant<RegisterName, Address, Indirect, PartialAddress>;
-	using Readable8 = std::variant<RegisterName8, Address, Immediate8, Indirect, PartialAddress, Register8PlusFlag, IndirectPlusFlag>;
-	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress, Register16PlusValue, Register8PlusFlag>;
+	using Readable8 = std::variant<RegisterName8, Address, Immediate8, Indirect, PartialAddress, Register8PlusFlag, IndirectPlusFlag, Immediate8PlusFlag>;
+	using Readable = std::variant<RegisterName, Address, Immediate8, Immediate16, Indirect, PartialAddress, Register16PlusValue, Register8PlusFlag, IndirectPlusFlag, Immediate8PlusFlag>;
 
 	struct LoadEvent8 {
 		Writeable dest;
@@ -89,6 +95,12 @@ namespace jagce {
 		bool operator==(const AddEvent8& other) const;
 	};
 
+	struct SubEvent8 {
+		Readable8 r;
+		FlagStateChange flagStates;
+		bool operator==(const SubEvent8& other) const;
+	};
+
 	enum class ShiftDirection {
 		LEFT,
 		RIGHT
@@ -110,7 +122,7 @@ namespace jagce {
 
 	using NopEvent = std::monostate;
 
-	using Event = std::variant<AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
+	using Event = std::variant<SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input

@@ -14,11 +14,28 @@ namespace jagce {
 		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
 		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
 		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
+		return f;
+	}
+
+	constexpr FlagStateChange _sub8FlagStateChanges() {
+		jagce::FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::SET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
 		return f;
 	}
 
 	constexpr FlagStateChange add8FlagStateChanges = _add8FlagStateChanges();
 	constexpr FlagStateChange addCarry8FlagStateChanges = _add8FlagStateChanges();
+	constexpr FlagStateChange sub8FlagStateChanges = _sub8FlagStateChanges();
+	constexpr FlagStateChange subCarry8FlagStateChanges = _sub8FlagStateChanges();
 
 	Immediate16 getImmediate16FromByteStream(ByteStream& in) {
 		uint8_t lsb = in.get();
@@ -38,6 +55,14 @@ namespace jagce {
 		return {AddEvent8{RegisterNames::A, IndirectPlusFlag{i, FlagName::C}, addCarry8FlagStateChanges}};
 	}
 
+	constexpr Event createSubCarry8EventFromRegister(const RegisterName8& r) {
+		return {SubEvent8{Register8PlusFlag{r, FlagName::C}, subCarry8FlagStateChanges}};
+	}
+
+	constexpr Event createSubCarry8EventFromIndirect(const Indirect& i) {
+		return {SubEvent8{IndirectPlusFlag{i, FlagName::C}, subCarry8FlagStateChanges}};
+	}
+
 	Event createLoadFromImmediate16ToRegister(ByteStream& in, RegisterName16 r) {
 		return {LoadEvent16{{r}, {Immediate16{getImmediate16FromByteStream(in)}}}};
 	}
@@ -53,6 +78,10 @@ namespace jagce {
 
 	bool Register8PlusFlag::operator==(const Register8PlusFlag& other) const {
 		return this->r == other.r && this->flag == other.flag;
+	}
+
+	bool Immediate8PlusFlag::operator==(const Immediate8PlusFlag& other) const {
+		return this->n == other.n && this->flag == other.flag;
 	}
 
 	bool Register16PlusValue::operator==(const Register16PlusValue& other) const {
@@ -77,6 +106,10 @@ namespace jagce {
 
 	bool AddEvent8::operator==(const AddEvent8& other) const {
 		return this->a == other.a && this->b == other.b;
+	}
+
+	bool SubEvent8::operator==(const SubEvent8& other) const {
+		return this->r == other.r && this->flagStates == other.flagStates;
 	}
 
 	bool IndirectPlusFlag::operator==(const IndirectPlusFlag& other) const {
@@ -389,9 +422,56 @@ namespace jagce {
 			case 0x8D:
 				return createAddCarry8EventFromRegister(RegisterNames::L);
 			case 0x8E:
-				return createAddCarry8EventFromRegister(RegisterNames::A);
-			case 0xCE:
 				return createAddCarry8EventFromIndirect(Indirect::HL);
+			case 0xCE:
+				{
+					Immediate8 n = in.get();
+					return AddEvent8{RegisterNames::A, Immediate8PlusFlag{n, FlagName::C}, sub8FlagStateChanges};
+				}
+			// 8-bit subtraction operations
+			case 0x97:
+				return SubEvent8{RegisterNames::A, sub8FlagStateChanges};
+			case 0x90:
+				return SubEvent8{RegisterNames::B, sub8FlagStateChanges};
+			case 0x91:
+				return SubEvent8{RegisterNames::C, sub8FlagStateChanges};
+			case 0x92:
+				return SubEvent8{RegisterNames::D, sub8FlagStateChanges};
+			case 0x93:
+				return SubEvent8{RegisterNames::E, sub8FlagStateChanges};
+			case 0x94:
+				return SubEvent8{RegisterNames::H, sub8FlagStateChanges};
+			case 0x95:
+				return SubEvent8{RegisterNames::L, sub8FlagStateChanges};
+			case 0x96:
+				return SubEvent8{Indirect::HL, sub8FlagStateChanges};
+			case 0xD6:
+				{
+					Immediate8 n = in.get();
+					return SubEvent8{n, sub8FlagStateChanges};
+				}
+			// 8-bit sub carry operations
+			case 0x9F:
+				return createSubCarry8EventFromRegister(RegisterNames::A);
+			case 0x98:
+				return createSubCarry8EventFromRegister(RegisterNames::B);
+			case 0x99:
+				return createSubCarry8EventFromRegister(RegisterNames::C);
+			case 0x9A:
+				return createSubCarry8EventFromRegister(RegisterNames::D);
+			case 0x9B:
+				return createSubCarry8EventFromRegister(RegisterNames::E);
+			case 0x9C:
+				return createSubCarry8EventFromRegister(RegisterNames::H);
+			case 0x9D:
+				return createSubCarry8EventFromRegister(RegisterNames::L);
+			case 0x9E:
+				return createSubCarry8EventFromIndirect(Indirect::HL);
+			case 0xDE:
+				{
+					Immediate8 n = in.get();
+					return SubEvent8{n, sub8FlagStateChanges};
+				}
 			default:
 				return {NopEvent{}};
 		}
