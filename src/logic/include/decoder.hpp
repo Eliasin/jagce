@@ -72,6 +72,76 @@ namespace jagce {
 		return result;
 	};
 
+	constexpr FlagStateChange _add8FlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
+		return f;
+	}
+
+	constexpr FlagStateChange _sub8FlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::SET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
+		return f;
+	}
+
+	constexpr FlagStateChange _and8FlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::SET;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::RESET;
+
+		return f;
+	}
+
+	constexpr FlagStateChange _or8FlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::RESET;
+
+		return f;
+	}
+
+	constexpr FlagStateChange _xor8FlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::RESET;
+
+		return f;
+	}
+
 	struct LoadEvent16 {
 		Writeable16 dest;
 		Readable src;
@@ -92,31 +162,31 @@ namespace jagce {
 	struct AddEvent8 {
 		Readable8 a;
 		Readable8 b;
-		FlagStateChange flagStates;
+		constexpr static FlagStateChange flagStates = _add8FlagStateChanges();
 		bool operator==(const AddEvent8& other) const;
 	};
 
 	struct SubEvent8 {
 		Readable8 r;
-		FlagStateChange flagStates;
+		constexpr static FlagStateChange flagStates = _sub8FlagStateChanges();
 		bool operator==(const SubEvent8& other) const;
 	};
 
 	struct AndEvent8 {
 		Readable8 r;
-		FlagStateChange flagStates;
+		constexpr static FlagStateChange flagStates = _and8FlagStateChanges();
 		bool operator==(const AndEvent8& other) const;
 	};
 
 	struct OrEvent8 {
 		Readable8 r;
-		FlagStateChange flagStates;
+		constexpr static FlagStateChange flagStates = _or8FlagStateChanges();
 		bool operator==(const OrEvent8& other) const;
 	};
 
 	struct XorEvent8 {
 		Readable8 r;
-		FlagStateChange flagStates;
+		constexpr static FlagStateChange flagStates = _xor8FlagStateChanges();
 		bool operator==(const XorEvent8& other) const;
 	};
 
