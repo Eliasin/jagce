@@ -90,14 +90,27 @@ namespace jagce {
 		return {AndEvent8{r}};
 	}
 
-    constexpr Event createAndEventFromImmediate(const Immediate8& r) {
-        return {AndEvent8{r}};
+    constexpr Event createAndEventFromImmediate(const Immediate8& i) {
+        return {AndEvent8{i}};
     }
 
     Event createAnd8EventFromImmediate(ByteStream& in) {
-        Immediate8 immediate = in.get();
+        Immediate8 immediate = static_cast<Immediate8>(in.get());
         return {AndEvent8{immediate}};
     }
+
+	constexpr Event createOr8EventFromRegister(const RegisterName8& r) {
+		return {OrEvent8{r}};
+	}
+
+	constexpr Event createOr8EventFromIndirect(const Indirect& i) {
+		return {OrEvent8{i}};
+	}
+
+	Event createOr8EventFromImmediate(ByteStream& in) {
+		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
+		return {OrEvent8{immediate8}};
+	}
 
 	bool PartialAddress::operator==(const PartialAddress& other) const {
 		return this->msb == other.msb && this->lsb == other.lsb;
@@ -522,6 +535,25 @@ namespace jagce {
 				return createAddCarry8EventFromIndirect(Indirect::HL);
 			case 0xE6:
 				return createAnd8EventFromImmediate(in);
+			// 8-bit or operations
+			case 0xB7:
+				return createOr8EventFromRegister(RegisterNames::A);
+			case 0xB0:
+				return createOr8EventFromRegister(RegisterNames::B);
+			case 0xB1:
+				return createOr8EventFromRegister(RegisterNames::C);
+			case 0xB2:
+				return createOr8EventFromRegister(RegisterNames::D);
+			case 0xB3:
+				return createOr8EventFromRegister(RegisterNames::E);
+			case 0xB4:
+				return createOr8EventFromRegister(RegisterNames::H);
+			case 0xB5:
+				return createOr8EventFromRegister(RegisterNames::L);
+			case 0xB6:
+				return createOr8EventFromIndirect(Indirect::HL);
+			case 0xF6:
+				return createOr8EventFromImmediate(in);
 			default:
 				return {NopEvent{}};
 		}
