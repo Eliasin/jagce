@@ -46,10 +46,26 @@ namespace jagce {
 		return f;
 	}
 
+	constexpr FlagStateChange _or8FlagStateChanges() {
+		jagce::FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::RESET;
+
+		return f;
+	}
+
 	constexpr FlagStateChange add8FlagStateChanges = _add8FlagStateChanges();
 	constexpr FlagStateChange addCarry8FlagStateChanges = _add8FlagStateChanges();
 	constexpr FlagStateChange sub8FlagStateChanges = _sub8FlagStateChanges();
 	constexpr FlagStateChange subCarry8FlagStateChanges = _sub8FlagStateChanges();
+	constexpr FlagStateChange and8FlagStateChanges = _and8FlagStateChanges();
+	constexpr FlagStateChange or8FlagStateChanges = _or8FlagStateChanges();
 
 	Immediate16 getImmediate16FromByteStream(ByteStream& in) {
 		uint8_t lsb = in.get();
@@ -87,29 +103,29 @@ namespace jagce {
 	}
 
 	constexpr Event createAndEventFromRegister(const RegisterName8& r) {
-		return {AndEvent8{r}};
+		return {AndEvent8{r, and8FlagStateChanges}};
 	}
 
     constexpr Event createAndEventFromImmediate(const Immediate8& i) {
-        return {AndEvent8{i}};
+        return {AndEvent8{i, and8FlagStateChanges}};
     }
 
     Event createAnd8EventFromImmediate(ByteStream& in) {
         Immediate8 immediate = static_cast<Immediate8>(in.get());
-        return {AndEvent8{immediate}};
+        return {AndEvent8{immediate, and8FlagStateChanges}};
     }
 
 	constexpr Event createOr8EventFromRegister(const RegisterName8& r) {
-		return {OrEvent8{r}};
+		return {OrEvent8{r, or8FlagStateChanges}};
 	}
 
 	constexpr Event createOr8EventFromIndirect(const Indirect& i) {
-		return {OrEvent8{i}};
+		return {OrEvent8{i, or8FlagStateChanges}};
 	}
 
 	Event createOr8EventFromImmediate(ByteStream& in) {
 		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
-		return {OrEvent8{immediate8}};
+		return {OrEvent8{immediate8, or8FlagStateChanges}};
 	}
 
 	bool PartialAddress::operator==(const PartialAddress& other) const {
@@ -153,6 +169,10 @@ namespace jagce {
 	}
 
 	bool AndEvent8::operator==(const AndEvent8& other) const {
+		return this->r == other.r && this->flagStates == other.flagStates;
+	}
+
+	bool OrEvent8::operator==(const OrEvent8& other) const {
 		return this->r == other.r && this->flagStates == other.flagStates;
 	}
 
@@ -554,6 +574,7 @@ namespace jagce {
 				return createOr8EventFromIndirect(Indirect::HL);
 			case 0xF6:
 				return createOr8EventFromImmediate(in);
+
 			default:
 				return {NopEvent{}};
 		}
