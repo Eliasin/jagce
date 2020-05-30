@@ -18,31 +18,41 @@ namespace jagce {
 	struct PartialAddress {
 		std::variant<Immediate8, RegisterName8> msb;
 		std::variant<Immediate8, RegisterName8> lsb;
-		bool operator==(const PartialAddress& other) const;
+		constexpr bool operator==(const PartialAddress& other) const {
+			return this->msb == other.msb && this->lsb == other.lsb;
+		}
 	};
 
 	struct Register8PlusFlag {
 		RegisterName8 r;
 		FlagName flag;
-		bool operator==(const Register8PlusFlag& other) const;
+		constexpr bool operator==(const Register8PlusFlag& other) const {
+			return this->r == other.r && this->flag == other.flag;
+		}
 	};
 
 	struct IndirectPlusFlag {
 		Indirect i;
 		FlagName flag;
-		bool operator==(const IndirectPlusFlag& other) const;
+		constexpr bool operator==(const IndirectPlusFlag& other) const {
+			return this->i == other.i && this->flag == other.flag;
+		}
 	};
 
 	struct Immediate8PlusFlag {
 		Immediate8 n;
 		FlagName flag;
-		bool operator==(const Immediate8PlusFlag& other) const;
+		constexpr bool operator==(const Immediate8PlusFlag& other) const {
+			return this->n == other.n && this->flag == other.flag;
+		}
 	};
 
 	struct Register16PlusValue {
 		RegisterName reg;
 		Immediate16 val;
-		bool operator==(const Register16PlusValue& other) const;
+		constexpr bool operator==(const Register16PlusValue& other) const {
+			return this->reg == other.reg && this->val == other.val;
+		}
 	};
 
 	using Writeable16 = std::variant<RegisterName16, Address, Indirect, PartialAddress>;
@@ -53,7 +63,9 @@ namespace jagce {
 	struct LoadEvent8 {
 		Writeable dest;
 		Readable8 src;
-		bool operator==(const LoadEvent8& other) const;
+		constexpr bool operator==(const LoadEvent8& other) const {
+			return this->dest == other.dest && this->src == other.src;
+		}
 	};
 
 	using FlagStateChange = std::array<FlagState, 8>;
@@ -146,48 +158,64 @@ namespace jagce {
 		Writeable16 dest;
 		Readable src;
 		FlagStateChange flagStates;
-		bool operator==(const LoadEvent16& other) const;
+		constexpr bool operator==(const LoadEvent16& other) const {
+			return this->dest == other.dest && this->src == other.src && this->flagStates == other.flagStates;
+		}
 	};
 
 	struct PushEvent {
 		Readable src;
-		bool operator==(const PushEvent& other) const;
+		constexpr bool operator==(const PushEvent& other) const {
+			return this->src == other.src;
+		}
 	};
 
 	struct PopEvent {
 		Writeable16 dest;
-		bool operator==(const PopEvent& other) const;
+		constexpr bool operator==(const PopEvent& other) const {
+			return this->dest == other.dest;
+		}
 	};
 
 	struct AddEvent8 {
 		Readable8 a;
 		Readable8 b;
 		constexpr static FlagStateChange flagStates = _add8FlagStateChanges();
-		bool operator==(const AddEvent8& other) const;
+		constexpr bool operator==(const AddEvent8& other) const {
+			return this->a == other.a && this->b == other.b;
+		}
 	};
 
 	struct SubEvent8 {
 		Readable8 r;
 		constexpr static FlagStateChange flagStates = _sub8FlagStateChanges();
-		bool operator==(const SubEvent8& other) const;
+		constexpr bool operator==(const SubEvent8& other) const {
+			return this->r == other.r;
+		}
 	};
 
 	struct AndEvent8 {
 		Readable8 r;
 		constexpr static FlagStateChange flagStates = _and8FlagStateChanges();
-		bool operator==(const AndEvent8& other) const;
+		constexpr bool operator==(const AndEvent8& other) const {
+			return this->r == other.r;
+		}
 	};
 
 	struct OrEvent8 {
 		Readable8 r;
 		constexpr static FlagStateChange flagStates = _or8FlagStateChanges();
-		bool operator==(const OrEvent8& other) const;
+		constexpr bool operator==(const OrEvent8& other) const {
+			return this->r == other.r;
+		}
 	};
 
 	struct XorEvent8 {
 		Readable8 r;
 		constexpr static FlagStateChange flagStates = _xor8FlagStateChanges();
-		bool operator==(const XorEvent8& other) const;
+		constexpr bool operator==(const XorEvent8& other) const {
+			return this->r == other.r;
+		}
 	};
 
 	enum class ShiftDirection {
@@ -206,7 +234,9 @@ namespace jagce {
 		ShiftDirection direction;
 		ShiftType type;
 		unsigned int amount;
-		bool operator==(const RegisterShiftEvent& other) const;
+		constexpr bool operator==(const RegisterShiftEvent& other) const {
+			return this->registerName == other.registerName && this->direction == other.direction && this->type == other.type && this->amount == other.amount;
+		}
 	};
 
 	using NopEvent = std::monostate;

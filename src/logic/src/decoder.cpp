@@ -81,66 +81,6 @@ namespace jagce {
 		return {OrEvent8{immediate8}};
 	}
 
-	bool PartialAddress::operator==(const PartialAddress& other) const {
-		return this->msb == other.msb && this->lsb == other.lsb;
-	}
-
-	bool Register8PlusFlag::operator==(const Register8PlusFlag& other) const {
-		return this->r == other.r && this->flag == other.flag;
-	}
-
-	bool Immediate8PlusFlag::operator==(const Immediate8PlusFlag& other) const {
-		return this->n == other.n && this->flag == other.flag;
-	}
-
-	bool Register16PlusValue::operator==(const Register16PlusValue& other) const {
-		return this->reg == other.reg && this->val == other.val;
-	};
-
-	bool LoadEvent8::operator==(const LoadEvent8& other) const {
-		return this->dest == other.dest && this->src == other.src;
-	}
-
-	bool LoadEvent16::operator==(const LoadEvent16& other) const {
-		return this->dest == other.dest && this->src == other.src;
-	}
-
-	bool PushEvent::operator==(const PushEvent& other) const {
-		return this->src == other.src;
-	}
-
-	bool PopEvent::operator==(const PopEvent& other) const {
-		return this->dest == other.dest;
-	}
-
-	bool AddEvent8::operator==(const AddEvent8& other) const {
-		return this->a == other.a && this->b == other.b;
-	}
-
-	bool SubEvent8::operator==(const SubEvent8& other) const {
-		return this->r == other.r && this->flagStates == other.flagStates;
-	}
-
-	bool AndEvent8::operator==(const AndEvent8& other) const {
-		return this->r == other.r && this->flagStates == other.flagStates;
-	}
-
-	bool OrEvent8::operator==(const OrEvent8& other) const {
-		return this->r == other.r && this->flagStates == other.flagStates;
-	}
-
-	bool XorEvent8::operator==(const XorEvent8& other) const {
-		return this->r == other.r;
-	}
-
-	bool IndirectPlusFlag::operator==(const IndirectPlusFlag& other) const {
-		return this->i == other.i && this->flag == other.flag;
-	}
-
-	bool RegisterShiftEvent::operator==(const RegisterShiftEvent& other) const {
-		return this->registerName == other.registerName && this->direction == other.direction && this->type == other.type && this->amount == other.amount;
-	}
-
 	Event Decoder::decodeEvent(ByteStream& in) const {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
