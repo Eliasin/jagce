@@ -4,6 +4,22 @@
 
 namespace jagce {
 
+	constexpr FlagStateChange _defaultFlagStateChange() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::UNCH;
+
+		return f;
+	};
+
+	constexpr FlagStateChange defaultFlagStateChange = _defaultFlagStateChange();
+
 	Immediate16 getImmediate16FromByteStream(ByteStream& in) {
 		uint8_t lsb = in.get();
 		uint8_t msb = in.get();
@@ -349,7 +365,7 @@ namespace jagce {
 				return createLoadFromImmediate16ToRegister(in, RegisterNames::SP);
 			// 16-bit register to register loads
 			case 0xF9:
-				return LoadEvent16{{RegisterNames::SP}, {RegisterNames::HL}};
+				return LoadEvent16{{RegisterNames::SP}, {RegisterNames::HL}, defaultFlagStateChange};
 			// 16-bit Register16PlusValue to register loads
 			case 0xF8:
 				{
@@ -369,7 +385,7 @@ namespace jagce {
 			// 16-bit register to address loads
 			case 0x08:
 				{
-					return LoadEvent16{ Address{getAddressFromByteStream(in)}, {RegisterNames::SP} };
+					return LoadEvent16{ Address{getAddressFromByteStream(in)}, {RegisterNames::SP}, defaultFlagStateChange };
 				}
 			// 16-bit register to stack pushes
 			case 0xF5:
