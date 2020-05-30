@@ -32,6 +32,20 @@ namespace jagce {
 		return f;
 	}
 
+	constexpr FlagStateChange _and8FlagStateChanges() {
+		jagce::FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::SET;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::RESET;
+
+		return f;
+	}
+
 	constexpr FlagStateChange add8FlagStateChanges = _add8FlagStateChanges();
 	constexpr FlagStateChange addCarry8FlagStateChanges = _add8FlagStateChanges();
 	constexpr FlagStateChange sub8FlagStateChanges = _sub8FlagStateChanges();
@@ -72,6 +86,19 @@ namespace jagce {
 		return {LoadEvent8{{r}, {Immediate8{immediate8}}}};
 	}
 
+	constexpr Event createAndEventFromRegister(const RegisterName8& r) {
+		return {AndEvent8{r}};
+	}
+
+    constexpr Event createAndEventFromImmediate(const Immediate8& r) {
+        return {AndEvent8{r}};
+    }
+
+    Event createAnd8EventFromImmediate(ByteStream& in) {
+        Immediate8 immediate = in.get();
+        return {AndEvent8{immediate}};
+    }
+
 	bool PartialAddress::operator==(const PartialAddress& other) const {
 		return this->msb == other.msb && this->lsb == other.lsb;
 	}
@@ -109,6 +136,10 @@ namespace jagce {
 	}
 
 	bool SubEvent8::operator==(const SubEvent8& other) const {
+		return this->r == other.r && this->flagStates == other.flagStates;
+	}
+
+	bool AndEvent8::operator==(const AndEvent8& other) const {
 		return this->r == other.r && this->flagStates == other.flagStates;
 	}
 
@@ -472,6 +503,25 @@ namespace jagce {
 					Immediate8 n = in.get();
 					return SubEvent8{n, sub8FlagStateChanges};
 				}
+			// 8-bit and operations
+			case 0xA7:
+				return createAndEventFromRegister(RegisterNames::A);
+            case 0xA0:
+                return createAndEventFromRegister(RegisterNames::B);
+            case 0xA1:
+                return createAndEventFromRegister(RegisterNames::C);
+            case 0xA2:
+                return createAndEventFromRegister(RegisterNames::D);
+            case 0xA3:
+                return createAndEventFromRegister(RegisterNames::E);
+            case 0xA4:
+                return createAndEventFromRegister(RegisterNames::H);
+            case 0xA5:
+                return createAndEventFromRegister(RegisterNames::L);
+			case 0xA6:
+				return createAddCarry8EventFromIndirect(Indirect::HL);
+			case 0xE6:
+				return createAnd8EventFromImmediate(in);
 			default:
 				return {NopEvent{}};
 		}
