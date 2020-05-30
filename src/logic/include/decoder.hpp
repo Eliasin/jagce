@@ -10,6 +10,7 @@
 
 namespace jagce {
 
+	//TODO Make flag state changes static on most operations
 	using Address = size_t;
 	using Immediate8 = uint8_t;
 	using Immediate16 = uint16_t;
@@ -101,6 +102,12 @@ namespace jagce {
 		bool operator==(const SubEvent8& other) const;
 	};
 
+	struct AndEvent8 {
+		Readable8 r;
+		FlagStateChange flagStates;
+		bool operator==(const AndEvent8& other) const;
+	};
+
 	enum class ShiftDirection {
 		LEFT,
 		RIGHT
@@ -122,7 +129,7 @@ namespace jagce {
 
 	using NopEvent = std::monostate;
 
-	using Event = std::variant<SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
+	using Event = std::variant<AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input
