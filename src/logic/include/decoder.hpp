@@ -114,6 +114,12 @@ namespace jagce {
 		bool operator==(const OrEvent8& other) const;
 	};
 
+	struct XorEvent8 {
+		Readable8 r;
+		FlagStateChange flagStates;
+		bool operator==(const XorEvent8& other) const;
+	};
+
 	enum class ShiftDirection {
 		LEFT,
 		RIGHT
@@ -135,7 +141,7 @@ namespace jagce {
 
 	using NopEvent = std::monostate;
 
-	using Event = std::variant<OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
+	using Event = std::variant<XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input
