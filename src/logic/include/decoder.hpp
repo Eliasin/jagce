@@ -10,7 +10,6 @@
 
 namespace jagce {
 
-	//TODO Make flag state changes static on most operations
 	using Address = size_t;
 	using Immediate8 = uint8_t;
 	using Immediate16 = uint16_t;

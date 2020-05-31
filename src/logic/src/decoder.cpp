@@ -63,6 +63,19 @@ namespace jagce {
         return {AndEvent8{i}};
     }
 
+	constexpr Event createXorEvent8FromRegister(const RegisterName8& r) {
+		return {XorEvent8{r}};
+	}
+
+	constexpr Event createXorEvent8FromIndirect(const Indirect& i) {
+		return {XorEvent8{i}};
+	}
+
+	Event createXorEvent8FromImmediate(ByteStream& in) {
+		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
+		return {XorEvent8{immediate8}};
+	}
+
     Event createAnd8EventFromImmediate(ByteStream& in) {
         Immediate8 immediate = static_cast<Immediate8>(in.get());
         return {AndEvent8{immediate}};
@@ -471,7 +484,24 @@ namespace jagce {
 				return createOr8EventFromIndirect(Indirect::HL);
 			case 0xF6:
 				return createOr8EventFromImmediate(in);
-
+			case 0xAF:
+				return createXorEvent8FromRegister(RegisterNames::A);
+			case 0xA8:
+				return createXorEvent8FromRegister(RegisterNames::B);
+			case 0xA9:
+				return createXorEvent8FromRegister(RegisterNames::C);
+			case 0xAA:
+				return createXorEvent8FromRegister(RegisterNames::D);
+			case 0xAB:
+				return createXorEvent8FromRegister(RegisterNames::E);
+			case 0xAC:
+				return createXorEvent8FromRegister(RegisterNames::H);
+			case 0xAD:
+				return createXorEvent8FromRegister(RegisterNames::L);
+			case 0xAE:
+				return createXorEvent8FromIndirect(Indirect::HL);
+			case 0xEE:
+				return createXorEvent8FromImmediate(in);
 			default:
 				return {NopEvent{}};
 		}
