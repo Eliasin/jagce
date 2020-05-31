@@ -51,7 +51,7 @@ namespace jagce {
 	}
 
 	Event createLoadFromImmediate8ToRegister(ByteStream& in, RegisterName r) {
-		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
+		const Immediate8 immediate8 = static_cast<Immediate8>(in.get());
 		return {LoadEvent8{{r}, {Immediate8{immediate8}}}};
 	}
 
@@ -72,12 +72,12 @@ namespace jagce {
 	}
 
 	Event createXorEvent8FromImmediate(ByteStream& in) {
-		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
+		const Immediate8 immediate8 = static_cast<Immediate8>(in.get());
 		return {XorEvent8{immediate8}};
 	}
 
     Event createAnd8EventFromImmediate(ByteStream& in) {
-        Immediate8 immediate = static_cast<Immediate8>(in.get());
+        const Immediate8 immediate = static_cast<Immediate8>(in.get());
         return {AndEvent8{immediate}};
     }
 
@@ -90,8 +90,21 @@ namespace jagce {
 	}
 
 	Event createOr8EventFromImmediate(ByteStream& in) {
-		Immediate8 immediate8 = static_cast<Immediate8>(in.get());
+		const Immediate8 immediate8 = static_cast<Immediate8>(in.get());
 		return {OrEvent8{immediate8}};
+	}
+
+	constexpr Event createCompareEvent8FromRegister(const RegisterName8& r) {
+		return {CompareEvent8{r}};
+	}
+
+	constexpr Event createCompareEvent8FromIndirect(const Indirect& i) {
+		return {CompareEvent8{i}};
+	}
+
+	Event createCompareEvent8FromImmediate(ByteStream& in) {
+		const Immediate8 immediate8 = static_cast<Immediate8>(in.get());
+		return {CompareEvent8{immediate8}};
 	}
 
 	Event Decoder::decodeEvent(ByteStream& in) const {
@@ -502,6 +515,24 @@ namespace jagce {
 				return createXorEvent8FromIndirect(Indirect::HL);
 			case 0xEE:
 				return createXorEvent8FromImmediate(in);
+			case 0xBF:
+				return createCompareEvent8FromRegister(RegisterNames::A);
+			case 0xB8:
+				return createCompareEvent8FromRegister(RegisterNames::B);
+			case 0xB9:
+				return createCompareEvent8FromRegister(RegisterNames::C);
+			case 0xBA:
+				return createCompareEvent8FromRegister(RegisterNames::D);
+			case 0xBB:
+				return createCompareEvent8FromRegister(RegisterNames::E);
+			case 0xBC:
+				return createCompareEvent8FromRegister(RegisterNames::H);
+			case 0xBD:
+				return createCompareEvent8FromRegister(RegisterNames::L);
+			case 0xBE:
+				return createCompareEvent8FromIndirect(Indirect::HL);
+			case 0xFE:
+				return createCompareEvent8FromImmediate(in);
 			default:
 				return {NopEvent{}};
 		}
