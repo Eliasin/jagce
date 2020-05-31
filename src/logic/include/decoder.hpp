@@ -153,6 +153,20 @@ namespace jagce {
 		return f;
 	}
 
+	constexpr FlagStateChange _compare8FlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::SET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
+		return f;
+	}
+
 	struct LoadEvent16 {
 		Writeable16 dest;
 		Readable src;
@@ -217,6 +231,14 @@ namespace jagce {
 		}
 	};
 
+	struct CompareEvent8 {
+		Readable8 r;
+		constexpr static FlagStateChange flagStates = _compare8FlagStateChanges();
+		constexpr bool operator==(const CompareEvent8& other) const {
+			return this->r == other.r;
+		}
+	};
+
 	enum class ShiftDirection {
 		LEFT,
 		RIGHT
@@ -240,7 +262,7 @@ namespace jagce {
 
 	using NopEvent = std::monostate;
 
-	using Event = std::variant<XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
+	using Event = std::variant<CompareEvent8, XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input
