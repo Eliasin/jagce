@@ -107,6 +107,14 @@ namespace jagce {
 		return {CompareEvent8{immediate8}};
 	}
 
+	Event createIncrementEvent8FromRegister(const RegisterName8& r) {
+		return {IncrementEvent8{r}};
+	}
+
+	Event createIncrementEvent8FromIndirect(const Indirect& i) {
+		return {IncrementEvent8{i}};
+	}
+
 	Event Decoder::decodeEvent(ByteStream& in) const {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
@@ -533,6 +541,22 @@ namespace jagce {
 				return createCompareEvent8FromIndirect(Indirect::HL);
 			case 0xFE:
 				return createCompareEvent8FromImmediate(in);
+			case 0x3C:
+				return createIncrementEvent8FromRegister(RegisterNames::A);
+			case 0x04:
+				return createIncrementEvent8FromRegister(RegisterNames::B);
+			case 0x0C:
+				return createIncrementEvent8FromRegister(RegisterNames::C);
+			case 0x14:
+				return createIncrementEvent8FromRegister(RegisterNames::D);
+			case 0x1C:
+				return createIncrementEvent8FromRegister(RegisterNames::E);
+			case 0x24:
+				return createIncrementEvent8FromRegister(RegisterNames::H);
+			case 0x2C:
+				return createIncrementEvent8FromRegister(RegisterNames::L);
+			case 0x34:
+				return createIncrementEvent8FromIndirect(Indirect::HL);
 			default:
 				return {NopEvent{}};
 		}
