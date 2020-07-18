@@ -123,6 +123,11 @@ namespace jagce {
 		return {DecrementEvent8{i}};
 	}
 
+	Event createAddSPEventFromImmediate(ByteStream& in) {
+		Immediate8 imm = in.get();
+		return { AddSPEvent{imm} };
+	}
+
 	Event Decoder::decodeEvent(ByteStream& in) const {
 		uint8_t firstByte = in.get();
 		std::optional<uint8_t> prefixByte{};
@@ -594,6 +599,9 @@ namespace jagce {
 				return { AddHLEvent{RegisterNames::HL} };
 			case 0x39:
 				return { AddHLEvent{RegisterNames::SP} };
+			// 16-bit ADDSP operations
+			case 0xE8:
+				return createAddSPEventFromImmediate(in);
 			default:
 				return {NopEvent{}};
 		}
