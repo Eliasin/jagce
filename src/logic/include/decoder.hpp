@@ -195,6 +195,20 @@ namespace jagce {
 		return f;
 	}
 
+	constexpr FlagStateChange _addHLFlagStateChanges() {
+		FlagStateChange f{};
+		f.at(static_cast<size_t>(jagce::FlagName::S)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::Z)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::F5)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::H)) = jagce::FlagState::DEFER;
+		f.at(static_cast<size_t>(jagce::FlagName::F3)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::PV)) = jagce::FlagState::UNCH;
+		f.at(static_cast<size_t>(jagce::FlagName::N)) = jagce::FlagState::RESET;
+		f.at(static_cast<size_t>(jagce::FlagName::C)) = jagce::FlagState::DEFER;
+
+		return f;
+	}
+
 	struct LoadEvent16 {
 		Writeable16 dest;
 		Readable src;
@@ -224,6 +238,14 @@ namespace jagce {
 		constexpr static FlagStateChange flagStates = _add8FlagStateChanges();
 		constexpr bool operator==(const AddEvent8& other) const {
 			return this->a == other.a && this->b == other.b;
+		}
+	};
+
+	struct AddHLEvent {
+		RegisterName16 r;
+		constexpr static FlagStateChange flagStates = _addHLFlagStateChanges();
+		constexpr bool operator==(const AddHLEvent& other) const {
+			return this->r == other.r;
 		}
 	};
 
@@ -307,7 +329,7 @@ namespace jagce {
 
 	using NopEvent = std::monostate;
 
-	using Event = std::variant<DecrementEvent8, IncrementEvent8, CompareEvent8, XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent>;
+	using Event = std::variant<DecrementEvent8, IncrementEvent8, CompareEvent8, XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent, AddHLEvent>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input

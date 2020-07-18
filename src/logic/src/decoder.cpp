@@ -513,6 +513,7 @@ namespace jagce {
 				return createOr8EventFromIndirect(Indirect::HL);
 			case 0xF6:
 				return createOr8EventFromImmediate(in);
+			// 8-bit xor operations
 			case 0xAF:
 				return createXorEvent8FromRegister(RegisterNames::A);
 			case 0xA8:
@@ -531,6 +532,7 @@ namespace jagce {
 				return createXorEvent8FromIndirect(Indirect::HL);
 			case 0xEE:
 				return createXorEvent8FromImmediate(in);
+			// 8-bit compare operations
 			case 0xBF:
 				return createCompareEvent8FromRegister(RegisterNames::A);
 			case 0xB8:
@@ -549,6 +551,7 @@ namespace jagce {
 				return createCompareEvent8FromIndirect(Indirect::HL);
 			case 0xFE:
 				return createCompareEvent8FromImmediate(in);
+			// 8-bit increment operations
 			case 0x3C:
 				return createIncrementEvent8FromRegister(RegisterNames::A);
 			case 0x04:
@@ -565,6 +568,7 @@ namespace jagce {
 				return createIncrementEvent8FromRegister(RegisterNames::L);
 			case 0x34:
 				return createIncrementEvent8FromIndirect(Indirect::HL);
+			// 8-bit decrement operations
 			case 0x3D:
 				return createDecrementEvent8FromRegister(RegisterNames::A);
 			case 0x05:
@@ -581,6 +585,15 @@ namespace jagce {
 				return createDecrementEvent8FromRegister(RegisterNames::L);
 			case 0x35:
 				return createDecrementEvent8FromIndirect(Indirect::HL);
+			// 16-bit ADDHL operations
+			case 0x09:
+				return { AddHLEvent{RegisterNames::BC} };
+			case 0x19:
+				return { AddHLEvent{RegisterNames::DE} };
+			case 0x29:
+				return { AddHLEvent{RegisterNames::HL} };
+			case 0x39:
+				return { AddHLEvent{RegisterNames::SP} };
 			default:
 				return {NopEvent{}};
 		}
