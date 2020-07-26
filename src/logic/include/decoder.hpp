@@ -319,6 +319,20 @@ namespace jagce {
 		}
 	};
 
+	struct IncrementEvent16 {
+		RegisterName16 r;
+		constexpr bool operator==(const IncrementEvent16& other) const {
+			return this->r == other.r;
+		}
+	};
+
+	struct DecrementEvent16 {
+		RegisterName16 r;
+		constexpr bool operator==(const DecrementEvent16& other) const {
+			return this->r == other.r;
+		}
+	};
+
 	struct DecrementEvent8 {
 		Writeable r;
 		constexpr static FlagStateChange flagStates = _decrement8FlagStateChanges();
@@ -351,7 +365,7 @@ namespace jagce {
 
 	using NopEvent = std::monostate;
 
-	using Event = std::variant<DecrementEvent8, IncrementEvent8, CompareEvent8, XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent, AddHLEvent, AddSPEvent>;
+	using Event = std::variant<DecrementEvent8, IncrementEvent8, CompareEvent8, XorEvent8, OrEvent8, AndEvent8, SubEvent8, AddEvent8, PushEvent, PopEvent, RegisterShiftEvent, LoadEvent8, LoadEvent16, NopEvent, AddHLEvent, AddSPEvent, IncrementEvent16, DecrementEvent16>;
 
 	/** 
 	 * The decoder class consumes bytes from a byte stream as it's input
