@@ -602,6 +602,24 @@ namespace jagce {
 			// 16-bit ADDSP operations
 			case 0xE8:
 				return createAddSPEventFromImmediate(in);
+			// 16-bit INC operations
+			case 0x03:
+				return { IncrementEvent16{RegisterNames::BC} };
+			case 0x13:
+				return { IncrementEvent16{RegisterNames::DE} };
+			case 0x23:
+				return { IncrementEvent16{RegisterNames::HL} };
+			case 0x33:
+				return { IncrementEvent16{RegisterNames::SP} };
+			// 16-bit DEC operations
+			case 0x0B:
+				return { DecrementEvent16{RegisterNames::BC} };
+			case 0x1B:
+				return { DecrementEvent16{RegisterNames::DE} };
+			case 0x2B:
+				return { DecrementEvent16{RegisterNames::HL} };
+			case 0x3B:
+				return { DecrementEvent16{RegisterNames::SP} };
 			default:
 				return {NopEvent{}};
 		}
